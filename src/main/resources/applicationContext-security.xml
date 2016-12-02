@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns:b="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://www.springframework.org/schema/security"
+         xmlns:p="http://www.springframework.org/schema/p"
+         xmlns:util="http://www.springframework.org/schema/util"
+         xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <http auto-config="true">
+        <intercept-url pattern="/s/msg/post" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/s/msg/get" access="permitAll"/> 
+        <intercept-url pattern="/s/msg/me" access="permitAll"/> 
+        <intercept-url pattern="/s/msg/test001" access="permitAll"/> 
+        <intercept-url pattern="/index.html" access="permitAll"/>
+        <intercept-url pattern="/res/**" access="permitAll"/>  
+        <form-login />    
+        <http-basic />
+        <csrf disabled="true"/>
+    </http>
+       
+    <!--The login form simply contains j_username and j_password input fields, and posts to the URL that is monitored by the filter (by default this is /j_spring_security_check). The basic filter configuration looks something like this:-->
+
+    <authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <user name="test001" password="test001" authorities="ROLE_USER" />
+                <user name="admin" password="admin" authorities="ROLE_USER,ROLE_ADMIN"/>
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>
+</b:beans>

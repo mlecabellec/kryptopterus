@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>kryptopterus</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+        <link rel="stylesheet" href="res/styles/app.css"/>
+        <link rel="stylesheet" href="res/styles/bootstrap-theme.css"/>
+        <link rel="stylesheet" href="res/styles/bootstrap.css"/>
+        <link rel="stylesheet" href="res/styles/handsontable.full.css"/>
+        <link rel="stylesheet" href="res/styles/animate.css"/>
+        <link rel="stylesheet" href="res/styles/quill.base.css"/>
+        <link rel="stylesheet" href="res/styles/quill.snow.css"/>
+        <link rel="stylesheet" href="res/styles/app.css"/>
+
+
+        <script src="res/js/d3.js"></script>
+
+        <script src="res/js/jquery-2.2.3.js"></script>
+        <script src="res/js/jstree.js"></script>
+        <script src="res/js/handsontable.full.js"></script> 
+
+        <script src="res/js/lodash.min.js"></script>
+        <script src="res/js/mithril.js"></script>
+        <script src="res/js/snap.svg.js"></script>
+        <script src="res/js/quill.js"></script>
+
+
+
+
+    </head>
+    <body>
+
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">BW</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><p id="meLabel" class="navbar-text">Anonymous</p></li>
+                        <li><button id="doLoginButton" type="button" class="btn btn-default  navbar-btn">Sign in</button></li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>        
+
+
+        <div id="mainContainer" class="container">
+            <div class="jumbotron">
+                <h1>Proof of concept !!</h1>
+            </div>
+            <div id="messageEditorContainer" class="">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">New message</h3>
+                    </div>
+                    <div class="panel-body">
+                        <!-- Create the toolbar container -->
+                        <div id="quillEditorToolbar">
+
+                            <span class="ql-format-group">
+                                <select title="Font" class="ql-font">
+                                    <option value="sans-serif" selected="">Sans Serif</option>
+                                    <option value="serif">Serif</option>
+                                    <option value="monospace">Monospace</option>
+                                </select>
+                                <select title="Size" class="ql-size">
+                                    <option value="10px">Small</option>
+                                    <option value="13px" selected="">Normal</option>
+                                    <option value="18px">Large</option>
+                                    <option value="32px">Huge</option>
+                                    <option value="54px">Too huge</option>
+                                </select>
+                            </span>
+                            <span class="ql-format-group">
+                                <span title="Bold" class="ql-format-button ql-bold"></span>
+                                <span class="ql-format-separator"></span>
+                                <span title="Italic" class="ql-format-button ql-italic"></span>
+                                <span class="ql-format-separator"></span>
+                                <span title="Underline" class="ql-format-button ql-underline"></span>
+                                <span class="ql-format-separator"></span>
+                                <span title="Strikethrough" class="ql-format-button ql-strike"></span>
+                            </span>
+                            <span class="ql-format-group">
+                                <select title="Text Color" class="ql-color">
+                                    <option value="rgb(0, 0, 0)" label="rgb(0, 0, 0)" selected=""></option>
+                                    <option value="rgb(230, 0, 0)" label="rgb(230, 0, 0)"></option>
+                                    <option value="rgb(255, 153, 0)" label="rgb(255, 153, 0)"></option>
+                                    <option value="rgb(255, 255, 0)" label="rgb(255, 255, 0)"></option>
+                                    <option value="rgb(0, 138, 0)" label="rgb(0, 138, 0)"></option>
+                                    <option value="rgb(0, 102, 204)" label="rgb(0, 102, 204)"></option>
+                                    <option value="rgb(153, 51, 255)" label="rgb(153, 51, 255)"></option>
+                                    <option value="rgb(255, 255, 255)" label="rgb(255, 255, 255)"></option>
+                                    <option value="rgb(250, 204, 204)" label="rgb(250, 204, 204)"></option>
+                                    <option value="rgb(255, 235, 204)" label="rgb(255, 235, 204)"></option>
+                                    <option value="rgb(255, 255, 204)" label="rgb(255, 255, 204)"></option>
+                                    <option value="rgb(204, 232, 204)" label="rgb(204, 232, 204)"></option>
+                                    <option value="rgb(204, 224, 245)" label="rgb(204, 224, 245)"></option>
+                                    <option value="rgb(235, 214, 255)" label="rgb(235, 214, 255)"></option>
+                                    <option value="rgb(187, 187, 187)" label="rgb(187, 187, 187)"></option>
+                                    <option value="rgb(240, 102, 102)" label="rgb(240, 102, 102)"></option>
+                                    <option value="rgb(255, 194, 102)" label="rgb(255, 194, 102)"></option>
+                                    <option value="rgb(255, 255, 102)" label="rgb(255, 255, 102)"></option>
+                                    <option value="rgb(102, 185, 102)" label="rgb(102, 185, 102)"></option>
+                                    <option value="rgb(102, 163, 224)" label="rgb(102, 163, 224)"></option>
+                                    <option value="rgb(194, 133, 255)" label="rgb(194, 133, 255)"></option>
+                                    <option value="rgb(136, 136, 136)" label="rgb(136, 136, 136)"></option>
+                                    <option value="rgb(161, 0, 0)" label="rgb(161, 0, 0)"></option>
+                                    <option value="rgb(178, 107, 0)" label="rgb(178, 107, 0)"></option>
+                                    <option value="rgb(178, 178, 0)" label="rgb(178, 178, 0)"></option>
+                                    <option value="rgb(0, 97, 0)" label="rgb(0, 97, 0)"></option>
+                                    <option value="rgb(0, 71, 178)" label="rgb(0, 71, 178)"></option>
+                                    <option value="rgb(107, 36, 178)" label="rgb(107, 36, 178)"></option>
+                                    <option value="rgb(68, 68, 68)" label="rgb(68, 68, 68)"></option>
+                                    <option value="rgb(92, 0, 0)" label="rgb(92, 0, 0)"></option>
+                                    <option value="rgb(102, 61, 0)" label="rgb(102, 61, 0)"></option>
+                                    <option value="rgb(102, 102, 0)" label="rgb(102, 102, 0)"></option>
+                                    <option value="rgb(0, 55, 0)" label="rgb(0, 55, 0)"></option>
+                                    <option value="rgb(0, 41, 102)" label="rgb(0, 41, 102)"></option>
+                                    <option value="rgb(61, 20, 102)" label="rgb(61, 20, 102)"></option>
+                                </select>
+                                <span class="ql-format-separator"></span>
+                                <select title="Background Color" class="ql-background">
+                                    <option value="rgb(0, 0, 0)" label="rgb(0, 0, 0)"></option>
+                                    <option value="rgb(230, 0, 0)" label="rgb(230, 0, 0)"></option>
+                                    <option value="rgb(255, 153, 0)" label="rgb(255, 153, 0)"></option>
+                                    <option value="rgb(255, 255, 0)" label="rgb(255, 255, 0)"></option>
+                                    <option value="rgb(0, 138, 0)" label="rgb(0, 138, 0)"></option>
+                                    <option value="rgb(0, 102, 204)" label="rgb(0, 102, 204)"></option>
+                                    <option value="rgb(153, 51, 255)" label="rgb(153, 51, 255)"></option>
+                                    <option value="rgb(255, 255, 255)" label="rgb(255, 255, 255)" selected=""></option>
+                                    <option value="rgb(250, 204, 204)" label="rgb(250, 204, 204)"></option>
+                                    <option value="rgb(255, 235, 204)" label="rgb(255, 235, 204)"></option>
+                                    <option value="rgb(255, 255, 204)" label="rgb(255, 255, 204)"></option>
+                                    <option value="rgb(204, 232, 204)" label="rgb(204, 232, 204)"></option>
+                                    <option value="rgb(204, 224, 245)" label="rgb(204, 224, 245)"></option>
+                                    <option value="rgb(235, 214, 255)" label="rgb(235, 214, 255)"></option>
+                                    <option value="rgb(187, 187, 187)" label="rgb(187, 187, 187)"></option>
+                                    <option value="rgb(240, 102, 102)" label="rgb(240, 102, 102)"></option>
+                                    <option value="rgb(255, 194, 102)" label="rgb(255, 194, 102)"></option>
+                                    <option value="rgb(255, 255, 102)" label="rgb(255, 255, 102)"></option>
+                                    <option value="rgb(102, 185, 102)" label="rgb(102, 185, 102)"></option>
+                                    <option value="rgb(102, 163, 224)" label="rgb(102, 163, 224)"></option>
+                                    <option value="rgb(194, 133, 255)" label="rgb(194, 133, 255)"></option>
+                                    <option value="rgb(136, 136, 136)" label="rgb(136, 136, 136)"></option>
+                                    <option value="rgb(161, 0, 0)" label="rgb(161, 0, 0)"></option>
+                                    <option value="rgb(178, 107, 0)" label="rgb(178, 107, 0)"></option>
+                                    <option value="rgb(178, 178, 0)" label="rgb(178, 178, 0)"></option>
+                                    <option value="rgb(0, 97, 0)" label="rgb(0, 97, 0)"></option>
+                                    <option value="rgb(0, 71, 178)" label="rgb(0, 71, 178)"></option>
+                                    <option value="rgb(107, 36, 178)" label="rgb(107, 36, 178)"></option>
+                                    <option value="rgb(68, 68, 68)" label="rgb(68, 68, 68)"></option>
+                                    <option value="rgb(92, 0, 0)" label="rgb(92, 0, 0)"></option>
+                                    <option value="rgb(102, 61, 0)" label="rgb(102, 61, 0)"></option>
+                                    <option value="rgb(102, 102, 0)" label="rgb(102, 102, 0)"></option>
+                                    <option value="rgb(0, 55, 0)" label="rgb(0, 55, 0)"></option>
+                                    <option value="rgb(0, 41, 102)" label="rgb(0, 41, 102)"></option>
+                                    <option value="rgb(61, 20, 102)" label="rgb(61, 20, 102)"></option>
+                                </select>
+                            </span>
+                            <span class="ql-format-group">
+                                <span title="List" class="ql-format-button ql-list"></span>
+                                <span class="ql-format-separator"></span>
+                                <span title="Bullet" class="ql-format-button ql-bullet"></span>
+                                <span class="ql-format-separator"></span>
+                                <select title="Text Alignment" class="ql-align">
+                                    <option value="left" label="Left" selected=""></option>
+                                    <option value="center" label="Center"></option>
+                                    <option value="right" label="Right"></option>
+                                    <option value="justify" label="Justify"></option>
+                                </select>
+                            </span>
+                            <span class="ql-format-group">
+                                <span title="Link" class="ql-format-button ql-link"></span>
+                            </span>
+
+                        </div>
+
+                        <!-- Create the editor container -->
+                        <div id="quillEditor" class="well">
+                        </div>
+
+                        <div class="pull-right" style="margin-top: 10px;">
+                            <button id="publishButton" type="button" class="btn btn-primary">Publish !!</button>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+            <div id="messageStackContainer" >
+
+            </div> 
+
+
+        </div>     
+
+
+
+
+        <div id="loginModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Login</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="usernameField" placeholder="Username">
+                        </div>
+                        <div class="form-group">
+                            <label for="password1">Password</label>
+                            <input type="password" class="form-control" id="password1Field" placeholder="Password">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="closeLoginButton" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="loginButton" type="button" class="btn btn-primary">Log in</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->       
+
+
+
+        <script src="res/js/bootstrap.js"></script>
+        <script src="res/js/app.js"></script>
+
+    </body>
+</html>

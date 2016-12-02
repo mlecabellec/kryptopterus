@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ** Proprietary and Confidential ** ** Copyright 1995-2012, iBASEt, Inc. 
+	All Rights Reserved ** Unpublished-rights reserved under the Copyright Laws 
+	of the United States US Government Procurements: Commercial Software licensed 
+	with Restricted Rights. Use, reproduction, or disclosure is subject to restrictions 
+	set forth in license agreement and purchase contract. iBASEt, Inc. 27442 
+	Portola Parkway, Suite 300, Foothill Ranch, CA 92610 This is a Solumina BIS 
+	interface mapping document, which is a derived work based on Open Applications 
+	Group, Inc OAGIS® Business Object Docment (BOD) content. See OAGi License 
+	Agreement on usage and distribution, available at www.oagi.org, or included 
+	in the OAGIS schema package. This is an OAGIS XML instance with additional 
+	elements to document Solumina data mapped for interface transactions. Data 
+	are mapped to elements and to some attributes. XML Schema (XSD) Definitions 
+	* OAGIS: OAGi-BPI-Platform/org_openapplications_oagis/9_4_1/Developer/BODs/SyncBOM.xsd 
+	* iBASEt: OAGi-BPI-Platform/com_ibaset_solumina_oagis/9_4_1/Developer/UserArea/ibtsSchemas.xsd -->
+<SyncBOM xmlns="http://www.openapplications.org/oagis/9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ibts="http://www.ibaset.com/solumina/oagis"
+	xsi:schemaLocation="http://www.openapplications.org/oagis/9 file:///C:/Users/M023271/Desktop/desktop.20150401/poc-eai/Solumina/xsd/SyncBOM.xsd http://www.ibaset.com/solumina/oagis file:///C:/Users/M023271/Desktop/desktop.20150401/poc-eai/Solumina/xsd/ibtsSchemas.xsd"
+	languageCode="en-US" versionID="9_4" releaseID="9_4"
+	systemEnvironmentCode="Production">
+	<ApplicationArea>
+		<Sender>
+			<LogicalID>M023271-201504011435-0001</LogicalID>
+			<ComponentID>M023271-201504011435-0001</ComponentID>
+			<TaskID>M023271-201504011435-0001</TaskID>
+			<ReferenceID>M023271-201504011435-0001</ReferenceID>
+			<ConfirmationCode>M023271-201504011435-0001</ConfirmationCode>
+			<AuthorizationID>M023271-201504011435-0001</AuthorizationID>
+		</Sender>
+		<CreationDateTime>2015-04-01</CreationDateTime>
+		<BODID />
+	</ApplicationArea>
+	<DataArea>
+		<Sync>
+			<ActionCriteria>
+				<ActionExpression actionCode="Add">/SyncBOM/DataArea/BOM
+				</ActionExpression>
+			</ActionCriteria>
+		</Sync>
+		<BOM>
+			<BOMHeader>
+				<DocumentID agencyRole="PLM">
+					<ID>DEMO20150401001A01AAA</ID>
+					<RevisionID>AAA</RevisionID>
+				</DocumentID>
+				<!--<AlternateDocumentID agencyRole="PLM"> <ID>BomRevision.ExternalPLMNo</ID> 
+					</AlternateDocumentID> -->
+				<DocumentDateTime>2015-04-01</DocumentDateTime>
+				<Note>DEMO20150401001A01AAA TEST EBOM/MBOM</Note>
+				<DocumentReference type="ChangeRecordReference">
+					<DocumentID>
+						<ID>DEMO20150401001A01AAA</ID>
+					</DocumentID>
+					<Type>PCR</Type>
+				</DocumentReference>
+				<!-- <ChildBOMReference> <DocumentID> <ID>Bom.ChildBomNo</ID> <RevisionID>Bom.ChildBomRevision</RevisionID> 
+					</DocumentID> <Item> <ItemID> <ID>Bom.Component.ItemNo</ID> <RevisionID>Bom.Component.ItemRevision</RevisionID> 
+					</ItemID> </Item> </ChildBOMReference> -->
+				<UsageDescription>PHANTOM</UsageDescription>
+				<Type name="BomType">EBOM</Type>
+				<Location>
+					<ID>0078</ID>
+				</Location>
+				<UserArea>
+					<ibts:BOMHeaderUserArea>
+						<ibts:Program>A5E-EPC_F-FM</ibts:Program>
+						<ibts:Project>A5E-EPC_F-FM</ibts:Project>
+						<ibts:PlanningGroup>EPC20150401</ibts:PlanningGroup>
+						<ibts:EngineeringGroup>EPC20150401</ibts:EngineeringGroup>
+						<!-- <ibts:Effectivity>
+							<ibts:EffectivitySpecification
+								effectivityType="RANG-A5E-EPC-F">
+								<ibts:EffectiveRange>
+									<ibts:StartIdentifier>580</ibts:StartIdentifier>
+									<ibts:EndIdentifier>99999</ibts:EndIdentifier>
+								</ibts:EffectiveRange>
+							</ibts:EffectivitySpecification>
+							<ibts:EffectivitySpecification> <EffectiveTimePeriod> <StartDateTime>1967-08-13</StartDateTime> 
+								<EndDateTime>1967-08-13</EndDateTime> </EffectiveTimePeriod> </ibts:EffectivitySpecification> 
+						</ibts:Effectivity> -->
+						<ibts:UserConfigurableFields>
+							<ibts:UserConfigurableIdentifier
+								name="MBOMRevVarChar1" alias="MBOMRevVarChar1">M023271-201504011435-0001
+							</ibts:UserConfigurableIdentifier>
+							<ibts:UserConfigurableIdentifier
+								name="MBOMRevVarChar2" alias="MBOMRevVarChar2">M023271-201504011435-0001
+							</ibts:UserConfigurableIdentifier>
+							<ibts:UserConfigurableIdentifier
+								name="MBOMRevVarChar3" alias="MBOMRevVarChar3">M023271-201504011435-0001
+							</ibts:UserConfigurableIdentifier>
+							<ibts:UserConfigurableIdentifier
+								name="MBOMRevVarChar4" alias="MBOMRevVarChar4">M023271-201504011435-0001
+							</ibts:UserConfigurableIdentifier>
+							<ibts:UserConfigurableIdentifier
+								name="MBOMRevVarChar5" alias="MBOMRevVarChar5">M023271-201504011435-0001
+							</ibts:UserConfigurableIdentifier>
+							<ibts:UserConfigurableIdentifier
+								name="MBOMRevVarChar6" alias="MBOMRevVarChar6">M023271-201504011435-0001
+							</ibts:UserConfigurableIdentifier>
+							<ibts:UserConfigurableIdentifier
+								name="MBOMRevVarChar7" alias="MBOMRevVarChar7">M023271-201504011435-0001
+							</ibts:UserConfigurableIdentifier>
+							<ibts:UserConfigurableIdentifier
+								name="MBOMRevVarChar8" alias="MBOMRevVarChar8">M023271-201504011435-0001
+							</ibts:UserConfigurableIdentifier>
+							<ibts:UserConfigurableIdentifier
+								name="MBOMRevVarChar9" alias="MBOMRevVarChar9">M023271-201504011435-0001
+							</ibts:UserConfigurableIdentifier>
+						</ibts:UserConfigurableFields>
+					</ibts:BOMHeaderUserArea>
+				</UserArea>
+			</BOMHeader>
+			<BOMItemData>
+				<ItemID>
+					<ID>DEMO20150401001A01</ID>
+					<RevisionID />
+				</ItemID>
+				<Description>DEMO20150401001A01 PART DE TETE DU TEST
+					DEMO20150401001A01</Description>
+				<Classification>
+					<Codes>
+						<Code sequence="1">ZUNB</Code>
+					</Codes>
+				</Classification>
+				<Specification>
+					<Property>
+						<NameValue name="UOM">U</NameValue>
+					</Property>
+					<Property>
+						<NameValue name="VisualLink">http://new-intranet.public.infrapub.fr.st.space.corp/media/airbus_defence_and_space/airbus_defence_and_space_portal/news_8/oktober_2/m3b/Measat-3B_artists-Astrium_233x0_ratio.jpg
+						</NameValue>
+					</Property>
+				</Specification>
+				<Specification type="SecurityGroups">
+					<Property>
+						<NameValue name="SecurityGroup">ARIANE5</NameValue>
+					</Property>
+					<Property>
+						<NameValue name="SecurityGroupDescription">ACCESS RESERVE A5</NameValue>
+					</Property>
+					<Property>
+						<NameValue name="SecurityGroupIssuingAgency">AIRBUS DEFENCE AND SPACE</NameValue>
+					</Property>
+					<Property>
+						<NameValue name="SecurityGroupExpirationDate">2099-01-01</NameValue>
+					</Property>
+				</Specification>
+			</BOMItemData>
+			<BOMOption>
+				<ID>0010</ID>
+				<Name>DEMO20150401101A01</Name>
+				<BOMItemData>
+					<ItemID>
+						<ID>DEMO20150401101A01</ID>
+						<RevisionID />
+					</ItemID>
+					<Description>DEMO20150401101A01 PART</Description>
+					<Note>DEMO20150401101A01 PART</Note>
+					<Classification>
+						<Codes>
+							<Code sequence="1">ZUNB</Code>
+						</Codes>
+					</Classification>
+					<Specification>
+						<Property>
+							<NameValue name="UOM">U</NameValue>
+						</Property>
+						<Property>
+							<NameValue name="ObjectID">DEMO20150401101A01</NameValue>
+						</Property>
+						<Property>
+							<NameValue name="VisualLink">http://new-intranet.public.infrapub.fr.st.space.corp/media/airbus_defence_and_space/airbus_defence_and_space_portal/news_8/oktober_2/m3b/Measat-3B_artists-Astrium_233x0_ratio.jpg
+							</NameValue>
+						</Property>
+					</Specification>
+					
+					<FindNumber>01</FindNumber>
+					<Quantity unitCode="Bom.Component.UOM">1.0</Quantity>
+					<UserArea>
+						<ibts:BOMItemDataUserArea>
+							<!--<ibts:BOMItemReferenceDesignator> <ibts:ReferenceDesignator>DEMO2015040100201</ibts:ReferenceDesignator> 
+								<ibts:ReferenceDesignatorPreferenceRank>1</ibts:ReferenceDesignatorPreferenceRank> 
+								<ibts:ReferenceDesignatorQuantity>1.0</ibts:ReferenceDesignatorQuantity> 
+								</ibts:BOMItemReferenceDesignator> -->
+							<!--<ibts:Effectivity>
+								<ibts:EffectivitySpecification
+									effectivityType="RANG-A5E-EPC-F">
+									<ibts:EffectiveRange>
+										<ibts:StartIdentifier>580</ibts:StartIdentifier>
+										<ibts:EndIdentifier>99999</ibts:EndIdentifier>
+									</ibts:EffectiveRange>
+								</ibts:EffectivitySpecification>
+								<ibts:EffectivitySpecification> <EffectiveTimePeriod> <StartDateTime>1967-08-13</StartDateTime> 
+									<EndDateTime>1967-08-13</EndDateTime> </EffectiveTimePeriod> </ibts:EffectivitySpecification>
+							</ibts:Effectivity> -->
+						</ibts:BOMItemDataUserArea>
+					</UserArea>
+				</BOMItemData>
+			</BOMOption>
+			<BOMOption>
+				<ID>0020</ID>
+				<Name>DEMO20150401201A01</Name>
+				<BOMItemData>
+					<ItemID>
+						<ID>DEMO20150401201A01</ID>
+						<RevisionID />
+					</ItemID>
+					<Description>DEMO20150401201A01 PART</Description>
+					<Note>DEMO20150401201A01 PART</Note>
+					<Classification>
+						<Codes>
+							<Code sequence="1">ZUNB</Code>
+						</Codes>
+					</Classification>
+					<Specification>
+						<Property>
+							<NameValue name="UOM">M</NameValue>
+						</Property>
+						<Property>
+							<NameValue name="ObjectID">DEMO20150401201A01</NameValue>
+						</Property>
+						<Property>
+							<NameValue name="VisualLink">http://new-intranet.public.infrapub.fr.st.space.corp/media/airbus_defence_and_space/airbus_defence_and_space_portal/news_8/oktober_2/m3b/Measat-3B_artists-Astrium_233x0_ratio.jpg
+							</NameValue>
+						</Property>
+					</Specification>
+					<FindNumber>01</FindNumber>
+					<Quantity unitCode="Bom.Component.UOM">1.0</Quantity>
+					<UserArea>
+						<ibts:BOMItemDataUserArea>
+							<!--<ibts:BOMItemReferenceDesignator> <ibts:ReferenceDesignator>DEMO2015040100201</ibts:ReferenceDesignator> 
+								<ibts:ReferenceDesignatorPreferenceRank>1</ibts:ReferenceDesignatorPreferenceRank> 
+								<ibts:ReferenceDesignatorQuantity>1.0</ibts:ReferenceDesignatorQuantity> 
+								</ibts:BOMItemReferenceDesignator> -->
+							<!--<ibts:Effectivity>
+								<ibts:EffectivitySpecification
+									effectivityType="RANG-A5E-EPC-F">
+									<ibts:EffectiveRange>
+										<ibts:StartIdentifier>580</ibts:StartIdentifier>
+										<ibts:EndIdentifier>99999</ibts:EndIdentifier>
+									</ibts:EffectiveRange>
+								</ibts:EffectivitySpecification>
+								<ibts:EffectivitySpecification> <EffectiveTimePeriod> <StartDateTime>1967-08-13</StartDateTime> 
+									<EndDateTime>1967-08-13</EndDateTime> </EffectiveTimePeriod> </ibts:EffectivitySpecification> 
+							</ibts:Effectivity>-->
+						</ibts:BOMItemDataUserArea>
+					</UserArea>
+				</BOMItemData>
+			</BOMOption>
+		</BOM>
+	</DataArea>
+</SyncBOM>
