@@ -53,6 +53,7 @@
 
     <scm>
         <developerConnection>scm:git:https://gogs.extra.booleanworks.com/mlecabellec/kryptopterus.git</developerConnection>
+        <connection>https://github.com/mlecabellec/kryptopterus.git</connection>
     </scm>  
 
     <!--<dependencyManagement>
