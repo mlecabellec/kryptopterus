@@ -8,6 +8,9 @@
     <packaging>war</packaging>
 
     <name>kryptopterus, activity dashboard</name>
+    <description>
+        kryptopterus aims to be a user friendly activity and graph oriented maganement tool
+    </description>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
