@@ -18,6 +18,36 @@
         <!-- Used as the 'Vendor' for JNLP generation -->
         <name>Boolean Works</name>
     </organization>
+    
+    <developers>
+        <developer>
+            <id>vortigern</id>
+            <name>Mickael LE CABELLEC</name>
+            <email>mickael.lecabellec@gmail.com</email>
+            <url>http://www.booleanworks.com</url>
+            <organization>Boolean Works</organization>
+            <organizationUrl>http://www.booleanworks.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Paris</timezone>
+            <properties>
+                <picUrl>https://gogs.extra.booleanworks.com/avatars/2?s=290</picUrl>
+            </properties>
+        </developer>
+    </developers>
+    
+    
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
     <scm>
         <developerConnection>scm:git:https://gogs.extra.booleanworks.com/mlecabellec/kryptopterus.git</developerConnection>
     </scm>  
