@@ -9,10 +9,10 @@
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
     <http auto-config="true">
-        <intercept-url pattern="/s/msg/post" access="hasRole('ROLE_USER')"/>
-        <intercept-url pattern="/s/msg/get" access="permitAll"/> 
-        <intercept-url pattern="/s/msg/me" access="permitAll"/> 
-        <intercept-url pattern="/s/msg/test001" access="permitAll"/> 
+        <intercept-url pattern="/s/home/post" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/s/home/get" access="permitAll"/> 
+        <intercept-url pattern="/s/home/me" access="permitAll"/> 
+        <intercept-url pattern="/s/home/test001" access="permitAll"/> 
         <intercept-url pattern="/index.html" access="permitAll"/>
         <intercept-url pattern="/res/**" access="permitAll"/>  
         <form-login />    

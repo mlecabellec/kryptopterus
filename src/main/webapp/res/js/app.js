@@ -57,7 +57,7 @@ this.APP["login"] = this.APP["login"] || {
             };
             $("#password1Field").val("");
             var loginJqxhr = $.ajax({
-                url: "s/msg/me",
+                url: "s/home/me",
                 method: "POST",
                 cache: false,
                 data: JSON.stringify(me),
@@ -77,7 +77,7 @@ this.APP["login"] = this.APP["login"] || {
         updateMe: function updateMe()
         {
             var meJqxhr = $.ajax({
-                url: "s/msg/me",
+                url: "s/home/me",
                 method: "GET",
                 cache: false,
                 dataType: "json",
@@ -176,7 +176,7 @@ this.APP["home"] = this.APP["home"] || {
         getMessages: function getMessages(offset, count) {
 
             var loginJqxhr = $.ajax({
-                url: "s/msg/get",
+                url: "s/home/get",
                 method: "POST",
                 cache: false,
                 data: JSON.stringify({offset: offset, count: count}),
@@ -324,7 +324,7 @@ this.APP["home"] = this.APP["home"] || {
         postMessage: function postMessage(newMsg)
         {
             var postMsgJqxhr = $.ajax({
-                url: "s/msg/post",
+                url: "s/home/post",
                 method: "POST",
                 cache: false,
                 data: JSON.stringify(newMsg),
