@@ -3,6 +3,19 @@
   <persistence-unit name="kryptopterus_pu1" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>com.booleanworks.kryptopterus.entities.AppUser</class>
+    <class>com.booleanworks.kryptopterus.entities.AppActivity</class>
+    <class>com.booleanworks.kryptopterus.entities.AppActivityTemplate</class>
+    <class>com.booleanworks.kryptopterus.entities.AppActivityGroup</class>
+    <class>com.booleanworks.kryptopterus.entities.AppActivityGroupTemplate</class>
+    <class>com.booleanworks.kryptopterus.entities.AppActivityRelation</class>
+    <class>com.booleanworks.kryptopterus.entities.AppActivityRelationTemplate</class>
+    <class>com.booleanworks.kryptopterus.entities.AppPerson</class>
+    <class>com.booleanworks.kryptopterus.entities.AppProperty</class>
+    <class>com.booleanworks.kryptopterus.entities.AppActivityRelationType</class>
+    <class>com.booleanworks.kryptopterus.entities.AppPropertyTemplate</class>
+    <class>com.booleanworks.kryptopterus.entities.AppActivityGraph</class>
+    <class>com.booleanworks.kryptopterus.entities.AppActivityGraphTemplate</class>
+    <class>com.booleanworks.kryptopterus.entities.AppPropertyType</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby:kryptopterus_pu1;create=true"/>

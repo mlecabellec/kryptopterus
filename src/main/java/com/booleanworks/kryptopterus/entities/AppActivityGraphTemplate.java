@@ -1,10 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2016 Boolean Works.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.booleanworks.kryptopterus.entities;
 
+import com.booleanworks.kryptopterus.definitions.AppObjectTemplate;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +30,7 @@ import javax.persistence.InheritanceType;
  */
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
-public class AppUser extends AppPerson implements Serializable {
+public class AppActivityGraphTemplate  implements Serializable, AppObjectTemplate<AppActivityGraph> {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -44,10 +55,10 @@ public class AppUser extends AppPerson implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AppUser)) {
+        if (!(object instanceof AppActivityGraphTemplate)) {
             return false;
         }
-        AppUser other = (AppUser) object;
+        AppActivityGraphTemplate other = (AppActivityGraphTemplate) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -56,7 +67,12 @@ public class AppUser extends AppPerson implements Serializable {
 
     @Override
     public String toString() {
-        return "com.booleanworks.kryptopterus.entities.AppUser[ id=" + id + " ]";
+        return "com.booleanworks.kryptopterus.entities.AppActivityGraphTemplate[ id=" + id + " ]";
+    }
+
+    @Override
+    public AppActivityGraph getInstance() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

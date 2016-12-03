@@ -28,6 +28,11 @@
                 <user name="test001" password="test001" authorities="ROLE_USER" />
                 <user name="admin" password="admin" authorities="ROLE_USER,ROLE_ADMIN"/>
             </user-service>
-        </authentication-provider>
+        </authentication-provider>        
     </authentication-manager>
+    
+    <authentication-manager>
+        <authentication-provider ref="basicAuthenticationProvider"/>
+    </authentication-manager>
+    <b:bean id="basicAuthenticationProvider" class="com.booleanworks.kryptopterus.security.BasicAuthenticationProvider"/>
 </b:beans>

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-//Require JST, lodash and JQuery
+//Require JST, lodash, JQuery , jquery-template
 
 
 this["APP"] = this["APP"] || {
@@ -36,6 +36,8 @@ this.APP["login"] = this.APP["login"] || {
         init: function init()
         {
 
+            $("#templateContainer").loadTemplate("res/templates/loginModal.html",{}) ;
+
             $("#doLoginButton").unbind("click");
             $("#doLoginButton").on("click", APP.login.gui.displayLoginModal);
             $("#loginButton").unbind("click");
@@ -45,7 +47,12 @@ this.APP["login"] = this.APP["login"] || {
         displayLoginModal: function displayLoginModal()
         {
 
+            //$("#loginModal").modal();
+            $("#loginButton").unbind("click");
+            $("#loginButton").on("click", APP.login.gui.doLoginStage1);
             $("#loginModal").modal();
+            
+            
         },
         doLoginStage1: function doLoginStage1()
         {
@@ -157,8 +164,8 @@ this.APP["home"] = this.APP["home"] || {
             //$("#changeAndImpactsLink").unbind("click");
             //$("#changeAndImpactsLink").on("click", APP.home.gui.setupChangeAndImpactsWorkshop);
 
-            APP.home.gui.initQuillEditor_v1();
-            APP.home.gui.getMessages(0, 50);
+            //APP.home.gui.initQuillEditor_v1();
+            //APP.home.gui.getMessages(0, 50);
         },
         initQuillEditor_v1: function initQuillEditor_v1() {
 
