@@ -22,12 +22,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author vortigern
  */
 @Entity
+@XmlRootElement
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public class AppActivity extends AppObject implements Serializable {
 

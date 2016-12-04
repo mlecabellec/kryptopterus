@@ -23,17 +23,21 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author vortigern
  */
 @Entity
+@XmlRootElement
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public class AppProperty extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @XmlElement
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
@@ -41,6 +45,10 @@ public class AppProperty extends AppObject implements Serializable {
     
 
     private AppObject parentObject ;
+    
+    private String key ;
+    
+    private Serializable value ;
     
 
     public Long getId() {
@@ -90,6 +98,22 @@ public class AppProperty extends AppObject implements Serializable {
 
     public void setParentObject(AppObject parentObject) {
         this.parentObject = parentObject;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public Serializable getValue() {
+        return value;
+    }
+
+    public void setValue(Serializable value) {
+        this.value = value;
     }
     
     

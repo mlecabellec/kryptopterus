@@ -15,6 +15,15 @@
  */
 package com.booleanworks.kryptopterus.application;
 
+import com.booleanworks.kryptopterus.entities.AppUser;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -22,16 +31,68 @@ import javax.servlet.ServletContextListener;
  *
  * @author vortigern
  */
-public class WebAppBootstrapper implements ServletContextListener{
+public class WebAppBootstrapper implements ServletContextListener {
+
+    ;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
+        EntityManager em = emf.createEntityManager();
+
+        ensureAdminUserIsPresent:
+        {
+            em.getTransaction().begin();
+
+            Query q1 = em.createQuery("SELECT u FROM AppUser u WHERE u.username = :username");
+            q1.setParameter("username", "admin");
+            q1.setMaxResults(1);
+            q1.setFirstResult(0);
+            List<AppUser> appUsers = q1.getResultList();
+
+            if (appUsers.size() == 0) {
+                AppUser adminUser = new AppUser();
+                adminUser.setUsername("admin");
+                try {
+                    adminUser.encodeSecret("admin");
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(WebAppBootstrapper.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                adminUser.setSecurityIndex(20);
+                em.persist(adminUser);
+
+            }
+            em.getTransaction().commit();
+
+        }
+
+        ensureTestUserIsPresent:
+        {
+            em.getTransaction().begin();
+
+            Query q1 = em.createQuery("SELECT u FROM AppUser u WHERE u.username = :username");
+            q1.setParameter("username", "test001");
+            q1.setMaxResults(1);
+            q1.setFirstResult(0);
+            List<AppUser> appUsers = q1.getResultList();
+
+            if (appUsers.size() == 0) {
+                AppUser adminUser = new AppUser();
+                adminUser.setUsername("admin");
+                em.persist(adminUser);
+
+            }
+            em.getTransaction().commit();
+
+        }        
+        
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

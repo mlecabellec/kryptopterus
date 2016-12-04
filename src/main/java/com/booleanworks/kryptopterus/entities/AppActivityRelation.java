@@ -23,24 +23,30 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author vortigern
  */
 @Entity
+@XmlRootElement
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public class AppActivityRelation extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @XmlElement
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
     @OneToOne
+    @XmlElement
     private AppActivity firstActivity ;
     
     @OneToOne
+    @XmlElement
     private AppActivity secondActivity ;
 
     public Long getId() {
