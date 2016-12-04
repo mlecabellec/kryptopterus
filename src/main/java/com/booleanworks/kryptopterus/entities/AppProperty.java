@@ -22,6 +22,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -29,12 +30,18 @@ import javax.persistence.InheritanceType;
  */
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
-public class AppProperty implements Serializable {
+public class AppProperty extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    private AppPropertyTemplate sourceTemplate ;
+    
+
+    private AppObject parentObject ;
+    
 
     public Long getId() {
         return id;
@@ -68,5 +75,23 @@ public class AppProperty implements Serializable {
     public String toString() {
         return "com.booleanworks.kryptopterus.entities.AppProperty[ id=" + id + " ]";
     }
+
+    public AppPropertyTemplate getSourceTemplate() {
+        return sourceTemplate;
+    }
+
+    public void setSourceTemplate(AppPropertyTemplate sourceTemplate) {
+        this.sourceTemplate = sourceTemplate;
+    }
+
+    public AppObject getParentObject() {
+        return parentObject;
+    }
+
+    public void setParentObject(AppObject parentObject) {
+        this.parentObject = parentObject;
+    }
+    
+    
     
 }

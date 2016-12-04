@@ -26,12 +26,14 @@ import javax.persistence.Id;
  * @author vortigern
  */
 @Entity
-public class AppPropertyType implements Serializable {
+public class AppPropertyType extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    private String label ;
 
     public Long getId() {
         return id;
@@ -65,5 +67,15 @@ public class AppPropertyType implements Serializable {
     public String toString() {
         return "com.booleanworks.kryptopterus.entities.AppPropertyType[ id=" + id + " ]";
     }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+    
+    
     
 }

@@ -30,7 +30,7 @@ import javax.persistence.OneToOne;
  */
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
-public class AppActivityRelation implements Serializable {
+public class AppActivityRelation extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id

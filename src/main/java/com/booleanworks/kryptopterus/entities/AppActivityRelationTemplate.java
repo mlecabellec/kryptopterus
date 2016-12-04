@@ -30,7 +30,7 @@ import javax.persistence.InheritanceType;
  */
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
-public class AppActivityRelationTemplate  implements Serializable, AppObjectTemplate<AppActivityRelation> {
+public class AppActivityRelationTemplate extends AppObject implements Serializable, AppObjectTemplate<AppActivityRelation> {
 
     private static final long serialVersionUID = 1L;
     @Id

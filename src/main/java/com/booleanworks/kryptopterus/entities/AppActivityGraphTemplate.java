@@ -30,7 +30,7 @@ import javax.persistence.InheritanceType;
  */
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
-public class AppActivityGraphTemplate  implements Serializable, AppObjectTemplate<AppActivityGraph> {
+public class AppActivityGraphTemplate  extends AppObject implements Serializable, AppObjectTemplate<AppActivityGraph> {
 
     private static final long serialVersionUID = 1L;
     @Id

@@ -29,7 +29,7 @@ import javax.persistence.InheritanceType;
  */
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
-public class AppActivity implements Serializable {
+public class AppActivity extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id

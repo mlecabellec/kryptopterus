@@ -26,7 +26,7 @@ import javax.persistence.Id;
  * @author vortigern
  */
 @Entity
-public class AppUserGroup implements Serializable {
+public class AppUserGroup extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id

@@ -33,8 +33,8 @@ import javax.ws.rs.core.MediaType;
  *
  * @author vortigern
  */
-@Path("activity")
-public class ActivityService {
+@Path("activityList")
+public class ActivityListService {
 
 
     @Context

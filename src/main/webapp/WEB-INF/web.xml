@@ -37,10 +37,10 @@
         <description>Setup of quartz scheduler see src/resources/qartz.properties</description>
         <listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
     </listener>
-    <!--<listener>
-        <description>Listener for test data injection</description>
-        <listener-class>com.booleanworks.bomworkshop2015a.webapp.TestDataHelper</listener-class>
-    </listener>-->
+    <listener>
+        <description>Listener for bootstrap</description>
+        <listener-class>com.booleanworks.kryptopterus.application.WebAppBootstrapper</listener-class>
+    </listener>
     <servlet>
         <description>Jersey servlet mapping for data services</description>
         <servlet-name>jerseyServlet01</servlet-name>

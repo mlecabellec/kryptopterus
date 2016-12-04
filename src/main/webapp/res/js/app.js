@@ -36,23 +36,27 @@ this.APP["login"] = this.APP["login"] || {
         init: function init()
         {
 
-            $("#templateContainer").loadTemplate("res/templates/loginModal.html",{}) ;
-
             $("#doLoginButton").unbind("click");
             $("#doLoginButton").on("click", APP.login.gui.displayLoginModal);
-            $("#loginButton").unbind("click");
-            $("#loginButton").on("click", APP.login.gui.doLoginStage1);
+            //$("#loginButton").unbind("click");
+            //$("#loginButton").on("click", APP.login.gui.doLoginStage1);
             APP.login.gui.updateMe();
         },
         displayLoginModal: function displayLoginModal()
         {
 
             //$("#loginModal").modal();
-            $("#loginButton").unbind("click");
-            $("#loginButton").on("click", APP.login.gui.doLoginStage1);
-            $("#loginModal").modal();
-            
-            
+
+            $("#modalContainer").load("res/templates/loginModal.html", {}, function doLoginStage0() {
+
+                $("#loginButton").unbind("click");
+                $("#loginButton").on("click", APP.login.gui.doLoginStage1);
+                $("#loginModal").modal();
+
+            });
+
+
+
         },
         doLoginStage1: function doLoginStage1()
         {
@@ -176,7 +180,7 @@ APP.home.bootstrap();
 
 //------------------------------------------------------------------------------
 
-this.APP["activities"] = this.APP["activities"] || {
+this.APP["activityList"] = this.APP["activityList"] || {
     moduleInfo:
             {
                 moduleId: "APP.activities",
@@ -184,25 +188,29 @@ this.APP["activities"] = this.APP["activities"] || {
                 description: "Activity related functions including init routines"
             },
     bootstrap: function bootstrap() {
-        APP.loadedModules = APP.loadedModules.concat(APP.home.moduleInfo);
+        APP.loadedModules = APP.loadedModules.concat(APP.activityList.moduleInfo);
     },
     gui: {
         init: function init() {
 
             $("#displayActivityList").unbind("click");
-            $("#displayActivityList").on("click", APP.activities.gui.displayActivityList) ;
+            $("#displayActivityList").on("click", APP.activityList.gui.displayActivityList);
 
         },
         displayActivityList: function displayActivityList()
         {
+            $("#jumbotron>h1").text("Let's go...");
             $("#jumbotron").fadeOut();
+            $("#jumbotron>h1").text("Bienvenue !!");
             
+            
+
         }
     },
     toolKit: {},
     data: {}
 };
-APP.activities.bootstrap();
+APP.activityList.bootstrap();
 
 
 
@@ -211,5 +219,5 @@ $(function onReadyHandler()
 {
     APP.login.gui.init();
     APP.home.gui.init();
-    APP.activities.gui.init();
+    APP.activityList.gui.init();
 });

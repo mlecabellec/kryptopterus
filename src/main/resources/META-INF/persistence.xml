@@ -18,6 +18,11 @@
     <class>com.booleanworks.kryptopterus.entities.AppPropertyType</class>
     <class>com.booleanworks.kryptopterus.entities.AppUserGroup</class>
     <class>com.booleanworks.kryptopterus.entities.AppUserGroupMembership</class>
+    <class>com.booleanworks.kryptopterus.entities.AppObject</class>
+    <class>com.booleanworks.kryptopterus.entities.AppStringProperty</class>
+    <class>com.booleanworks.kryptopterus.entities.AppIntegerProperty</class>
+    <class>com.booleanworks.kryptopterus.entities.AppNumberProperty</class>
+    <class>com.booleanworks.kryptopterus.entities.AppDateProperty</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby:kryptopterus_pu1;create=true"/>
