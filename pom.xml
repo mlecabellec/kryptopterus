@@ -357,7 +357,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <doCheck>false</doCheck>
+                    <doCheck>true</doCheck>
                     <doUpdate>false</doUpdate>
                     <buildNumberPropertiesFileLocation>src/main/resources/mainApp.properties</buildNumberPropertiesFileLocation>
                     <shortRevisionLength>10</shortRevisionLength>
