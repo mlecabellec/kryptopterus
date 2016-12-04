@@ -27,6 +27,8 @@ public class HomeService {
 
     @Context
     HttpServletRequest request; // this is ok: the proxy of Request will be injected into this singleton
+    
+    
  
 
     @GET

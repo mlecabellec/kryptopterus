@@ -16,6 +16,8 @@
     <class>com.booleanworks.kryptopterus.entities.AppActivityGraph</class>
     <class>com.booleanworks.kryptopterus.entities.AppActivityGraphTemplate</class>
     <class>com.booleanworks.kryptopterus.entities.AppPropertyType</class>
+    <class>com.booleanworks.kryptopterus.entities.AppUserGroup</class>
+    <class>com.booleanworks.kryptopterus.entities.AppUserGroupMembership</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby:kryptopterus_pu1;create=true"/>
