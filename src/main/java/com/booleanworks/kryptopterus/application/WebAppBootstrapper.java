@@ -16,7 +16,10 @@
 package com.booleanworks.kryptopterus.application;
 
 import com.booleanworks.kryptopterus.entities.AppUser;
+import com.booleanworks.kryptopterus.entities.AppUserGroup;
+import com.booleanworks.kryptopterus.entities.AppUserGroupMembership;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,52 +45,17 @@ public class WebAppBootstrapper implements ServletContextListener {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
         EntityManager em = emf.createEntityManager();
 
-        ensureAdminUserIsPresent:
-        {
-            em.getTransaction().begin();
-
-            Query q1 = em.createQuery("SELECT u FROM AppUser u WHERE u.username = :username");
-            q1.setParameter("username", "admin");
-            q1.setMaxResults(1);
-            q1.setFirstResult(0);
-            List<AppUser> appUsers = q1.getResultList();
-
-            if (appUsers.size() == 0) {
-                AppUser adminUser = new AppUser();
-                adminUser.setUsername("admin");
-                try {
-                    adminUser.encodeSecret("admin");
-                } catch (UnsupportedEncodingException ex) {
-                    Logger.getLogger(WebAppBootstrapper.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                adminUser.setSecurityIndex(20);
-                em.persist(adminUser);
-
-            }
-            em.getTransaction().commit();
-
-        }
-
-        ensureTestUserIsPresent:
-        {
-            em.getTransaction().begin();
-
-            Query q1 = em.createQuery("SELECT u FROM AppUser u WHERE u.username = :username");
-            q1.setParameter("username", "test001");
-            q1.setMaxResults(1);
-            q1.setFirstResult(0);
-            List<AppUser> appUsers = q1.getResultList();
-
-            if (appUsers.size() == 0) {
-                AppUser adminUser = new AppUser();
-                adminUser.setUsername("admin");
-                em.persist(adminUser);
-
-            }
-            em.getTransaction().commit();
-
-        }        
+        AppUser adminUser = AppUser.QuickCreateNewAppUser("admin", "4dm1n", "mickael.lecabellec@booleaworks.com") ;
+        AppUser testUser = AppUser.QuickCreateNewAppUser("test001", "test001", "mickael.lecabellec@booleaworks.com") ;
         
+        AppUserGroup adminRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_ADMIN") ;
+        AppUserGroup userRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_USER") ;
+        
+        AppUserGroupMembership.quickAddMember(adminRole, adminUser);
+        AppUserGroupMembership.quickAddMember(userRole, adminUser);
+        
+        AppUserGroupMembership.quickAddMember(userRole, testUser);
+
     }
 
     @Override

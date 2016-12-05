@@ -46,7 +46,7 @@ public class AppProperty extends AppObject implements Serializable {
 
     private AppObject parentObject ;
     
-    private String key ;
+    private String propertyKey ;
     
     private Serializable value ;
     
@@ -100,13 +100,15 @@ public class AppProperty extends AppObject implements Serializable {
         this.parentObject = parentObject;
     }
 
-    public String getKey() {
-        return key;
+    public String getPropertyKey() {
+        return propertyKey;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setPropertyKey(String propertyKey) {
+        this.propertyKey = propertyKey;
     }
+
+
 
     public Serializable getValue() {
         return value;

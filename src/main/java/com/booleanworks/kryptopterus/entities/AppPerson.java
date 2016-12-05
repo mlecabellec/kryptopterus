@@ -39,6 +39,23 @@ public class AppPerson extends AppObject implements Serializable {
     @XmlElement
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    @XmlElement
+    private String canonicalName;
+    
+    @XmlElement
+    private String firstName;
+
+    @XmlElement
+    private String lastName;
+
+    @XmlElement
+    private String fullName;
+    
+    @XmlElement
+    private String email ;
+    
+    
 
     public Long getId() {
         return id;
@@ -72,5 +89,47 @@ public class AppPerson extends AppObject implements Serializable {
     public String toString() {
         return "com.booleanworks.kryptopterus.entities.AppPersion[ id=" + id + " ]";
     }
+
+    public String getCanonicalName() {
+        return canonicalName;
+    }
+
+    public void setCanonicalName(String canonicalName) {
+        this.canonicalName = canonicalName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    
     
 }

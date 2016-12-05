@@ -15,15 +15,30 @@
  */
 package com.booleanworks.kryptopterus.security;
 
+import com.booleanworks.kryptopterus.application.WebAppBootstrapper;
+import com.booleanworks.kryptopterus.entities.AppUser;
+import com.booleanworks.kryptopterus.entities.AppUserGroupMembership;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  *
@@ -36,24 +51,60 @@ public class BasicAuthenticationProvider implements AuthenticationProvider{
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        if(authentication.getPrincipal().toString().contains("test002"))
-        {
-            //authentication.setAuthenticated(true);
-            System.out.println("authentication.getCredentials().toString()= " + authentication.getCredentials().toString());
+        
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
+        EntityManager em = emf.createEntityManager();       
+        
+            em.getTransaction().begin();
+
+            Query q1 = em.createQuery("SELECT u FROM AppUser u WHERE u.username = :username");
+            q1.setParameter("username", authentication.getPrincipal());
+
+            q1.setMaxResults(1);
+            q1.setFirstResult(0);
+            List<AppUser> appUsers = q1.getResultList();
+
+            if (appUsers.size() == 1) {
+                
+                try {
+                    AppUser foundUser = appUsers.get(0);
+                    boolean goodSecret = foundUser.checkSecret(authentication.getCredentials().toString());
+                    if(goodSecret && !foundUser.isDisabled())
+                    {
+                        HashSet<SimpleGrantedAuthority> roles = new HashSet<>();
+                        
+                        for(AppUserGroupMembership augm : foundUser.getMemberships())
+                        {
+                            roles.add(new SimpleGrantedAuthority(augm.getAppUserGroup().getSecurityLabel())) ;
+                        }
+                        
+                        //TODO IMPLEMEN A TRUE PROVIDER !!!!
+                        em.getTransaction().commit();
+                        return  new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), roles  );
+                    }else
+                    {
+                        em.getTransaction().commit();
+                        throw new BadCredentialsException("Bad credentials ("+this.getClass().getCanonicalName()+")") ;
+                    }
+
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(WebAppBootstrapper.class.getName()).log(Level.SEVERE, null, ex);
+                    em.getTransaction().commit();
+                    throw new AuthenticationServiceException("Error while processing the request in "+ this.getClass().getCanonicalName(),ex);
+
+                }
+                //em.persist(foundUser);
+
+            }else
+            {
+                em.getTransaction().commit();     
+                throw new UsernameNotFoundException("User not found byt " + this.getClass().getCanonicalName());
+            }
             
-            Authentication result = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"))  );
-            //result.setAuthenticated(true);
-            return result;
             
-           
-        }
-        else
-        {
-            Authentication result = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))  );
-            //result.setAuthenticated(false);
-            return result;
-        }
-       
+               
+
+            
     }
 
     @Override

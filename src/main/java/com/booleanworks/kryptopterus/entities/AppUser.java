@@ -5,17 +5,32 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
+import com.booleanworks.kryptopterus.application.WebAppBootstrapper;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Date;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
@@ -53,6 +68,18 @@ public class AppUser extends AppPerson implements Serializable {
 
     @XmlElement
     private boolean disabled;
+
+    @XmlElement
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastLogin;
+
+    @XmlElement
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastLoginFailure;
+
+    @XmlElement
+    @OneToMany(mappedBy = "appUser", cascade = {CascadeType.ALL})
+    private Set<AppUserGroupMembership> memberships;
 
     public Long getId() {
         return id;
@@ -213,7 +240,7 @@ public class AppUser extends AppPerson implements Serializable {
     public static boolean checkHash(String sourceString, byte[] sourceHash, byte[] sourceSalt) throws UnsupportedEncodingException {
         // tuning parameters
 
-        // these sizes are relatively arbitrary
+        // these sizes are relatimmodificationDateodificationDatevely arbitrary
         int seedBytes = AppUser.hashAndSaltSize;
         int hashBytes = AppUser.hashAndSaltSize;
 
@@ -270,10 +297,20 @@ public class AppUser extends AppPerson implements Serializable {
             newSecret1 = tmp;
         }
 
-        this.setSecret1(secret1);
-        this.setSecret2(secret2);
-        this.setSecret3(secret3);
+        this.setSecret1(newSecret1);
+        this.setSecret2(newSecret2);
+        this.setSecret3(newSecret3);
 
+    }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i + 1), 16));
+        }
+        return data;
     }
 
     public boolean checkSecret(String secret) throws UnsupportedEncodingException {
@@ -291,21 +328,83 @@ public class AppUser extends AppPerson implements Serializable {
             byte[] hash = new byte[AppUser.hashAndSaltSize];
             byte[] salt = new byte[AppUser.hashAndSaltSize];
 
-            for (int cByte = 0; cByte < AppUser.hashAndSaltSize; cByte++) {
-                String hashByteString = secret1.substring(2 * cByte, 2 * cByte + 2);
-                String saltByteString = secret2.substring(2 * cByte, 2 * cByte + 2);
-                hash[cByte] = Byte.parseByte(hashByteString, 16);
-                salt[cByte] = Byte.parseByte(saltByteString, 16);
-            }
-            
-            if(AppUser.checkHash(secret, hash, salt))
-            {
-                return true ;
+            hash = hexStringToByteArray(secret1);
+            salt = hexStringToByteArray(secret2);
+
+            if (AppUser.checkHash(secret, hash, salt)) {
+                return true;
             }
 
         }
 
         return false;
     }
+
+    public Date getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(Date lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+    public Date getLastLoginFailure() {
+        return lastLoginFailure;
+    }
+
+    public void setLastLoginFailure(Date lastLoginFailure) {
+        this.lastLoginFailure = lastLoginFailure;
+    }
+
+    public Set<AppUserGroupMembership> getMemberships() {
+        return memberships;
+    }
+
+    public void setMemberships(Set<AppUserGroupMembership> memberships) {
+        this.memberships = memberships;
+    }
+
+    public static AppUser QuickCreateNewAppUser(String username, String secret, String email) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
+        EntityManager em = emf.createEntityManager();
+
+        quickCreateNewUser:
+        {
+            em.getTransaction().begin();
+
+            Query q1 = em.createQuery("SELECT u FROM AppUser u WHERE u.username = :username");
+            q1.setParameter("username", username);
+            q1.setMaxResults(1);
+            q1.setFirstResult(0);
+            List<AppUser> appUsers = q1.getResultList();
+
+            if (appUsers.isEmpty()) {
+                AppUser newUser = new AppUser();
+                newUser.setUsername(username);
+                newUser.setSecurityIndex(10);
+                newUser.setCreationDate(new Date());
+                newUser.setEmail(email);
+                try {
+                    newUser.encodeSecret(secret);
+                    System.out.println("adminUser.checkSecret(\"*****\")=" + newUser.checkSecret(secret));
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(WebAppBootstrapper.class.getName()).log(Level.SEVERE, null, ex);
+                    return null;
+                }
+                em.persist(newUser);
+                em.flush();
+                em.refresh(newUser);
+                em.getTransaction().commit();
+                return newUser;
+
+            } else {
+                em.getTransaction().commit();
+                return appUsers.get(0);
+            }
+
+        }
+
+    }
+    
 
 }

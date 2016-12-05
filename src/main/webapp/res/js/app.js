@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-//Require JST, lodash, JQuery , jquery-template
+//Require  lodash, JQuery , jquery-template, papaparse
 
 
 this["APP"] = this["APP"] || {
@@ -84,6 +84,30 @@ this.APP["login"] = this.APP["login"] || {
             APP.login.data.me = me;
             //TODO ?
 
+            if (me.hasAuthenticationFailed)
+            {
+                $("#jumbotron").fadeOut(3000);
+                var alertDiv = $("<div/>").addClass("alert alert-danger");
+                alertDiv.addClass("authAlert");
+                alertDiv.attr("role", "alert");
+                alertDiv.text(me.flashMessage);
+                alertDiv.hide();
+
+                alertDiv.appendTo("#messageContainer");
+                alertDiv.fadeIn(1200);
+
+            } else
+            {
+                $("div.authAlert").remove();
+
+                if ($(".alert alert-danger").length == 0)
+                {
+                    $("#jumbotron").fadeIn(300);
+                }
+
+
+            }
+
         },
         updateMe: function updateMe()
         {
@@ -102,6 +126,8 @@ this.APP["login"] = this.APP["login"] || {
         {
             $("#meLabel").text(me.username);
             APP.login.data.me = me;
+
+
             //TODO ?
 
         }
@@ -136,6 +162,44 @@ this.APP["debug"] = this.APP["debug"] || {
     }
 };
 APP.debug.bootstrap();
+//------------------------------------------------------------------------------
+
+
+this.APP["i18n"] = this.APP["i18n"] || {
+    moduleInfo:
+            {
+                moduleId: "APP.i18n",
+                moduleVersion: "0.0.1-DEV",
+                description: "i18n related functions"
+            },
+    bootstrap: function bootstrap() {
+        APP.loadedModules = APP.loadedModules.concat(APP.i18n.moduleInfo);
+    },
+    gui: {
+        init: function init()
+        {
+            var detectedUserLanguage = navigator.language || navigator.userLanguage;
+            //TODO
+
+
+        },
+        scanPageForPopulate: function scanPageForPopulate() {
+            //scan the page in order to index every text parts
+            //Every element should be populated with the targetCOntext 'page'
+            //context, internalIdentfier , cssSelector, content
+        },
+        translatePageElement: function translatePageElement(jqueryElement,targetContext)
+        {
+            //Translate every texts found using populated data and loaded data to targetContext (aka language)
+            //match on cssSelector
+        },
+        t:function t(identifier,context){
+            //Just returns the content related to an identifier and a context
+        }
+    },
+    data: {}
+};
+APP.i18n.bootstrap();
 //------------------------------------------------------------------------------
 
 this.APP["logs"] = this.APP["logs"] || {
@@ -202,8 +266,8 @@ this.APP["activityList"] = this.APP["activityList"] || {
             $("#jumbotron>h1").text("Let's go...");
             $("#jumbotron").fadeOut();
             $("#jumbotron>h1").text("Bienvenue !!");
-            
-            
+
+
 
         }
     },
@@ -217,6 +281,7 @@ APP.activityList.bootstrap();
 
 $(function onReadyHandler()
 {
+    APP.i18n.gui.init();
     APP.login.gui.init();
     APP.home.gui.init();
     APP.activityList.gui.init();

@@ -16,10 +16,16 @@
 package com.booleanworks.kryptopterus.entities;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -36,6 +42,12 @@ public class AppUserGroupMembership extends AppObject implements Serializable {
     @XmlElement
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @XmlElement
+    private AppUserGroup appUserGroup;
+
+    @XmlElement
+    private AppUser appUser;
 
     public Long getId() {
         return id;
@@ -69,5 +81,57 @@ public class AppUserGroupMembership extends AppObject implements Serializable {
     public String toString() {
         return "com.booleanworks.kryptopterus.entities.AppUserGroupMembership[ id=" + id + " ]";
     }
-    
+
+    public AppUserGroup getAppUserGroup() {
+        return appUserGroup;
+    }
+
+    public void setAppUserGroup(AppUserGroup appUserGroup) {
+        this.appUserGroup = appUserGroup;
+    }
+
+    public AppUser getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(AppUser appUser) {
+        this.appUser = appUser;
+    }
+
+    public static void quickAddMember(AppUserGroup appUserGroup, AppUser appUser) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
+        EntityManager em = emf.createEntityManager();
+
+        quickCreateNewUser:
+        {
+            em.getTransaction().begin();
+
+            Query q1 = em.createQuery("SELECT m FROM AppUserGroupMembership m WHERE (m.appUserGroup = :appUserGroup) AND (m.appUser = :appUser)");
+            q1.setParameter("appUserGroup", appUserGroup);
+            q1.setParameter("appUser", appUser);
+            q1.setMaxResults(1);
+            q1.setFirstResult(0);
+            List<AppUserGroupMembership> appUserGroupMemberships = q1.getResultList();
+
+            if (appUserGroupMemberships.isEmpty()) {
+                AppUserGroupMembership newAppUserGroupMembership = new AppUserGroupMembership();
+                newAppUserGroupMembership.setAppUser(appUser);
+                newAppUserGroupMembership.setAppUserGroup(appUserGroup);
+                newAppUserGroupMembership.setCreationDate(new Date());
+                newAppUserGroupMembership.setModificationDate(new Date());
+
+                em.persist(newAppUserGroupMembership);
+                em.flush();
+                em.refresh(newAppUserGroupMembership);
+                //em.refresh(appUserGroup);
+                em.getTransaction().commit();
+
+            } else {
+                em.getTransaction().commit();
+
+            }
+
+        }
+    }
+
 }

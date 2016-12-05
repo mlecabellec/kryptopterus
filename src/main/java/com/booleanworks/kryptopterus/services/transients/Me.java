@@ -6,15 +6,18 @@
 package com.booleanworks.kryptopterus.services.transients;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author vortigern
  */
-    public class Me implements Serializable {
+@XmlRootElement
+public class Me implements Serializable {
 
-        public boolean isAnonymous = true;
-        public String username = "anonymous";
-        public String flashMessage = "";
-        public String password = "";
-    }
+    public boolean isAnonymous = true;
+    public boolean hasAuthenticationFailed = false;
+    public String username = "anonymous";
+    public String flashMessage = "";
+    public String password = "";
+}

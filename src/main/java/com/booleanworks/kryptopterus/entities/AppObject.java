@@ -56,6 +56,9 @@ public class AppObject implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modificationDate ;
     
+    @XmlElement
+    private String displayName ; 
+    
 
     public Long getId() {
         return id;

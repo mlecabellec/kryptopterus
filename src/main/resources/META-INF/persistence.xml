@@ -23,13 +23,15 @@
     <class>com.booleanworks.kryptopterus.entities.AppIntegerProperty</class>
     <class>com.booleanworks.kryptopterus.entities.AppNumberProperty</class>
     <class>com.booleanworks.kryptopterus.entities.AppDateProperty</class>
+    <class>com.booleanworks.kryptopterus.entities.AppTranslation</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <shared-cache-mode>ALL</shared-cache-mode>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/test001?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="test001"/>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
       <property name="javax.persistence.jdbc.password" value="test001"/>
-      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+      <property name="javax.persistence.schema-generation.database.action" value="create"/>
     </properties>
   </persistence-unit>
 </persistence>

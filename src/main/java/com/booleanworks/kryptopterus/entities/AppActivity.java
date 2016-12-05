@@ -16,12 +16,17 @@
 package com.booleanworks.kryptopterus.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -37,7 +42,15 @@ public class AppActivity extends AppObject implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    @XmlElement
+    @OneToMany(mappedBy = "firstActivity",cascade = {CascadeType.ALL})
+    private Set<AppActivityRelation> relationsAsFirstActivity ;    
 
+    @XmlElement
+    @OneToMany(mappedBy = "secondActivity",cascade = {CascadeType.ALL})
+    private Set<AppActivityRelation> relationsAsSecondActivity ;     
+    
     public Long getId() {
         return id;
     }
@@ -69,6 +82,31 @@ public class AppActivity extends AppObject implements Serializable {
     @Override
     public String toString() {
         return "com.booleanworks.kryptopterus.entities.AppActivity[ id=" + id + " ]";
+    }
+
+    public Set<AppActivityRelation> getRelationsAsFirstActivity() {
+        return relationsAsFirstActivity;
+    }
+
+    public void setRelationsAsFirstActivity(Set<AppActivityRelation> relationsAsFirstActivity) {
+        this.relationsAsFirstActivity = relationsAsFirstActivity;
+    }
+
+    public Set<AppActivityRelation> getRelationsAsSecondActivity() {
+        return relationsAsSecondActivity;
+    }
+
+    public void setRelationsAsSecondActivity(Set<AppActivityRelation> relationsAsSecondActivity) {
+        this.relationsAsSecondActivity = relationsAsSecondActivity;
+    }
+    
+   public Set<AppActivityRelation> getRelations() {
+       
+        HashSet<AppActivityRelation> result = new HashSet<>();
+        result.addAll(this.getRelationsAsFirstActivity());
+        result.addAll(this.getRelationsAsSecondActivity());
+       
+        return result;
     }
     
 }
