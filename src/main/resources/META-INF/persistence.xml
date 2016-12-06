@@ -24,6 +24,8 @@
     <class>com.booleanworks.kryptopterus.entities.AppNumberProperty</class>
     <class>com.booleanworks.kryptopterus.entities.AppDateProperty</class>
     <class>com.booleanworks.kryptopterus.entities.AppTranslation</class>
+    <class>com.booleanworks.kryptopterus.entities.AppActivityStatus</class>
+    <class>com.booleanworks.kryptopterus.entities.AppActivityStatusTransition</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <shared-cache-mode>ALL</shared-cache-mode>
     <properties>
@@ -31,7 +33,7 @@
       <property name="javax.persistence.jdbc.user" value="test001"/>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
       <property name="javax.persistence.jdbc.password" value="test001"/>
-      <property name="javax.persistence.schema-generation.database.action" value="create"/>
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
     </properties>
   </persistence-unit>
 </persistence>

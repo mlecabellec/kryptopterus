@@ -58,36 +58,10 @@ public class ActivityListService {
     @GET
     @Path("test001")
     @Produces(MediaType.APPLICATION_JSON)
-    //@Consumes(MediaType.TEXT_PLAIN)
+    //@Consumes(MediaType.APPLICATION_JSON)
     public Boolean doTest001() {
 
         return Boolean.FALSE;
-    }
-
-    @GET
-    @Path("test002")
-    @Produces(MediaType.APPLICATION_JSON)
-    public HashSet<AppActivity> doTest002() {
-
-
-        HashSet<AppActivity> testSet = new HashSet<>();
-
-        for (int ctAct = 0; ctAct < 20; ctAct++) {
-            AppActivity appActivity = new AppActivity();
-            appActivity.setId((long) ctAct);
-            appActivity.setDisplayName("test" + new Random().nextLong());
-            appActivity.setCreationDate(new Date());
-            appActivity.setModificationDate(new Date());
-            appActivity.setRelationsAsFirstActivity(new HashSet<AppActivityRelation>());
-            appActivity.setRelationsAsSecondActivity(new HashSet<AppActivityRelation>());
-
-            testSet.add(appActivity);
-
-        }
-
-
-        return testSet; 
-
     }
 
 }

@@ -42,7 +42,7 @@ import org.bouncycastle.crypto.params.KeyParameter;
  */
 @Entity
 @XmlRootElement
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class AppUser extends AppPerson implements Serializable {
 
     static public final int hashAndSaltSize = 32;

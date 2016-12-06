@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @XmlRootElement
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy=InheritanceType.JOINED)
 public class AppActivityRelation extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,13 +41,16 @@ public class AppActivityRelation extends AppObject implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    @OneToOne
+
     @XmlElement
     private AppActivity firstActivity ;
     
-    @OneToOne
+
     @XmlElement
     private AppActivity secondActivity ;
+    
+    @XmlElement
+    private AppActivityRelationType relationType ;
 
     public Long getId() {
         return id;

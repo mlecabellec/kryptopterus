@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @XmlRootElement
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy=InheritanceType.JOINED)
 public class AppActivityGroupTemplate extends AppObject implements Serializable, AppObjectTemplate<AppActivityGroup>  {
 
     private static final long serialVersionUID = 1L;

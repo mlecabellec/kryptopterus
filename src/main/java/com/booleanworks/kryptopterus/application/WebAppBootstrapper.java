@@ -15,10 +15,15 @@
  */
 package com.booleanworks.kryptopterus.application;
 
+import com.booleanworks.kryptopterus.entities.AppActivity;
+import com.booleanworks.kryptopterus.entities.AppActivityStatus;
+import com.booleanworks.kryptopterus.entities.AppActivityStatusTransition;
 import com.booleanworks.kryptopterus.entities.AppUser;
 import com.booleanworks.kryptopterus.entities.AppUserGroup;
 import com.booleanworks.kryptopterus.entities.AppUserGroupMembership;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -55,7 +60,19 @@ public class WebAppBootstrapper implements ServletContextListener {
         AppUserGroupMembership.quickAddMember(userRole, adminUser);
         
         AppUserGroupMembership.quickAddMember(userRole, testUser);
+        
+        Calendar c = Calendar.getInstance() ;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        
+        AppActivityStatus.findOrCreate("New activity from app bootstrap", "BOOTSTRAP_NEW");
+        AppActivityStatus.findOrCreate("Finished (bootstrapactivity", "BOOTSTRAP_FINISHED");
+        AppActivityStatusTransition.findOrCreate("BOOTSTRAP_NEW", "BOOTSTRAP_FINISHED", "ROLE_ADMIN");
+        
+        AppActivity newActivity001 = AppActivity.findOrCreateWithBusinessIdentifier("Check application", "BOOTSTRAP001", "BOOTSTRAP_NEW");
+        AppActivity newActivity002 = AppActivity.findOrCreateWithBusinessIdentifier("Check application at " + simpleDateFormat.format(c.getTime()), "BOOTSTRAP  + simpleDateFormat.format(c.getTime())" , "BOOTSTRAP_NEW");
 
+        
+        
     }
 
     @Override

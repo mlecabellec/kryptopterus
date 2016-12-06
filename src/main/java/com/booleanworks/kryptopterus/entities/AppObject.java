@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @XmlRootElement
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy=InheritanceType.JOINED)
 public class AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -60,6 +60,21 @@ public class AppObject implements Serializable {
     
     @XmlElement
     private String displayName ; 
+    
+    @XmlElement
+    private AppUser creator ;
+    
+    @XmlElement
+    private AppUser lastEditor;
+    
+    @XmlElement
+    private AppUserGroup authorizedForView ;
+    
+    @XmlElement
+    private AppUserGroup authorizedForModification;
+    
+    @XmlElement
+    private AppUserGroup authorizedForDeletion;
     
 
     public Long getId() {
@@ -125,6 +140,46 @@ public class AppObject implements Serializable {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public AppUser getCreator() {
+        return creator;
+    }
+
+    public void setCreator(AppUser creator) {
+        this.creator = creator;
+    }
+
+    public AppUser getLastEditor() {
+        return lastEditor;
+    }
+
+    public void setLastEditor(AppUser lastEditor) {
+        this.lastEditor = lastEditor;
+    }
+
+    public AppUserGroup getAuthorizedForView() {
+        return authorizedForView;
+    }
+
+    public void setAuthorizedForView(AppUserGroup authorizedForView) {
+        this.authorizedForView = authorizedForView;
+    }
+
+    public AppUserGroup getAuthorizedForModification() {
+        return authorizedForModification;
+    }
+
+    public void setAuthorizedForModification(AppUserGroup authorizedForModification) {
+        this.authorizedForModification = authorizedForModification;
+    }
+
+    public AppUserGroup getAuthorizedForDeletion() {
+        return authorizedForDeletion;
+    }
+
+    public void setAuthorizedForDeletion(AppUserGroup authorizedForDeletion) {
+        this.authorizedForDeletion = authorizedForDeletion;
     }
     
     

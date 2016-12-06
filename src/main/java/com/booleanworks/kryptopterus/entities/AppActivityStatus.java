@@ -16,7 +16,9 @@
 package com.booleanworks.kryptopterus.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -25,6 +27,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.xml.bind.annotation.XmlElement;
@@ -37,7 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @XmlRootElement
 @Inheritance(strategy=InheritanceType.JOINED)
-public class AppActivityRelationType extends AppObject implements Serializable {
+public class AppActivityStatus extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -47,7 +50,16 @@ public class AppActivityRelationType extends AppObject implements Serializable {
     
     @XmlElement
     private String shortIdentifier ;
+    
+    @XmlElement
+    @OneToMany(mappedBy = "fromStatus")
+    private Set<AppActivityStatusTransition> fromTransitions ;
 
+    
+    @XmlElement
+    @OneToMany(mappedBy = "toStatus")
+    private Set<AppActivityStatusTransition> toTransitions ;    
+    
     public Long getId() {
         return id;
     }
@@ -66,10 +78,10 @@ public class AppActivityRelationType extends AppObject implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AppActivityRelationType)) {
+        if (!(object instanceof AppActivityStatus)) {
             return false;
         }
-        AppActivityRelationType other = (AppActivityRelationType) object;
+        AppActivityStatus other = (AppActivityStatus) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -78,7 +90,23 @@ public class AppActivityRelationType extends AppObject implements Serializable {
 
     @Override
     public String toString() {
-        return "com.booleanworks.kryptopterus.entities.AppActivityRelationType[ id=" + id + " ]";
+        return "com.booleanworks.kryptopterus.entities.AppActivityStatus[ id=" + id + " ]";
+    }
+
+    public Set<AppActivityStatusTransition> getFromTransitions() {
+        return fromTransitions;
+    }
+
+    public void setFromTransitions(Set<AppActivityStatusTransition> fromTransitions) {
+        this.fromTransitions = fromTransitions;
+    }
+
+    public Set<AppActivityStatusTransition> getToTransitions() {
+        return toTransitions;
+    }
+
+    public void setToTransitions(Set<AppActivityStatusTransition> toTransitions) {
+        this.toTransitions = toTransitions;
     }
 
     public String getShortIdentifier() {
@@ -86,11 +114,10 @@ public class AppActivityRelationType extends AppObject implements Serializable {
     }
 
     public void setShortIdentifier(String shortIdentifier) {
-        this.shortIdentifier = shortIdentifier;
+        this.shortIdentifier = shortIdentifier.toUpperCase().toUpperCase().replaceAll("[^A-Z0-9_-]", "");
     }
     
-    
-    public static AppActivityRelationType findOrCreate(String displayName, String shortIdentifier) {
+    public static AppActivityStatus findOrCreate(String displayName, String shortIdentifier) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
         EntityManager em = emf.createEntityManager();
 
@@ -98,33 +125,36 @@ public class AppActivityRelationType extends AppObject implements Serializable {
         {
             em.getTransaction().begin();
 
-            Query q1 = em.createQuery("SELECT a FROM AppActivityRelationType a WHERE a.shortIdentifier = :shortIdentifier");
+            Query q1 = em.createQuery("SELECT a FROM AppActivityStatus a WHERE a.shortIdentifier = :shortIdentifier");
             q1.setParameter("shortIdentifier", shortIdentifier);
             q1.setMaxResults(1);
             q1.setFirstResult(0);
-            List<AppActivityRelationType> appActivityRelationTypes = q1.getResultList();
+            List<AppActivityStatus> appActivityStatuses = q1.getResultList();
 
-            if (appActivityRelationTypes.isEmpty()) {
-                AppActivityRelationType newAppActivityRelationType = new AppActivityRelationType();
+            if (appActivityStatuses.isEmpty()) {
+                AppActivityStatus newActivityStatus = new AppActivityStatus();
  
-                newAppActivityRelationType.setShortIdentifier(shortIdentifier);
-                newAppActivityRelationType.setDisplayName(displayName);
+                newActivityStatus.setShortIdentifier(shortIdentifier);
+                newActivityStatus.setDisplayName(displayName);
+                newActivityStatus.setCreationDate(new Date());
+                newActivityStatus.setModificationDate(new Date());
                
                 
-                em.persist(newAppActivityRelationType);
+                em.persist(newActivityStatus);
                 em.flush();
-                em.refresh(newAppActivityRelationType);
+                em.refresh(newActivityStatus);
                 em.getTransaction().commit();
-                return newAppActivityRelationType;
+                return newActivityStatus;
 
             } else {
                 em.getTransaction().commit();
-                return appActivityRelationTypes.get(0);
+                return appActivityStatuses.get(0);
             }
 
         }
 
     }
-    
+
+
     
 }
