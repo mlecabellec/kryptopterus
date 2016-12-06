@@ -15,6 +15,8 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvDate;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -115,6 +117,14 @@ public class AppObject implements Serializable {
 
     public void setModificationDate(Date modificationDate) {
         this.modificationDate = modificationDate;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
     
     

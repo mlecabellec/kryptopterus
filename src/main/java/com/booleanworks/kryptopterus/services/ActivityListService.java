@@ -15,8 +15,24 @@
  */
 package com.booleanworks.kryptopterus.services;
 
-
+import com.booleanworks.kryptopterus.entities.AppActivity;
+import com.booleanworks.kryptopterus.entities.AppActivityRelation;
 import com.booleanworks.kryptopterus.services.transients.Me;
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.BeanToCsv;
+import com.opencsv.bean.ColumnPositionMappingStrategy;
+import com.opencsv.bean.HeaderColumnNameMappingStrategy;
+import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -36,18 +52,42 @@ import javax.ws.rs.core.MediaType;
 @Path("activityList")
 public class ActivityListService {
 
-
     @Context
     HttpServletRequest request; // this is ok: the proxy of Request will be injected into this singleton
-   
- @GET
+
+    @GET
     @Path("test001")
     @Produces(MediaType.APPLICATION_JSON)
     //@Consumes(MediaType.TEXT_PLAIN)
     public Boolean doTest001() {
 
-        return Boolean.FALSE ;
+        return Boolean.FALSE;
     }
 
-    
+    @GET
+    @Path("test002")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HashSet<AppActivity> doTest002() {
+
+
+        HashSet<AppActivity> testSet = new HashSet<>();
+
+        for (int ctAct = 0; ctAct < 20; ctAct++) {
+            AppActivity appActivity = new AppActivity();
+            appActivity.setId((long) ctAct);
+            appActivity.setDisplayName("test" + new Random().nextLong());
+            appActivity.setCreationDate(new Date());
+            appActivity.setModificationDate(new Date());
+            appActivity.setRelationsAsFirstActivity(new HashSet<AppActivityRelation>());
+            appActivity.setRelationsAsSecondActivity(new HashSet<AppActivityRelation>());
+
+            testSet.add(appActivity);
+
+        }
+
+
+        return testSet; 
+
+    }
+
 }

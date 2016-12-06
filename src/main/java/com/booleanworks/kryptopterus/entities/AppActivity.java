@@ -15,6 +15,7 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
+import com.opencsv.bean.CsvBindByName;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
