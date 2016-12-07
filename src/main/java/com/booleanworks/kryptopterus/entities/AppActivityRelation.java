@@ -17,12 +17,9 @@ package com.booleanworks.kryptopterus.entities;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -36,29 +33,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppActivityRelation extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @XmlElement
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    
 
-    @XmlElement
-    private AppActivity firstActivity ;
-    
-
-    @XmlElement
-    private AppActivity secondActivity ;
-    
-    @XmlElement
-    private AppActivityRelationType relationType ;
-
-    public Long getId() {
-        return id;
+    public AppActivityRelation() {
+        super();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @XmlElement
+    @ManyToOne(targetEntity = AppActivity.class)
+    protected AppActivity firstActivity;
+
+    @XmlElement
+    @ManyToOne(targetEntity = AppActivity.class)
+    protected AppActivity secondActivity;
+
+    @XmlElement
+    @ManyToOne
+    protected AppActivityRelationType relationType;
 
     @Override
     public int hashCode() {
@@ -84,5 +74,5 @@ public class AppActivityRelation extends AppObject implements Serializable {
     public String toString() {
         return "com.booleanworks.kryptopterus.entities.AppActivityRelation[ id=" + id + " ]";
     }
-    
+
 }

@@ -5,10 +5,10 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
+import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import com.booleanworks.kryptopterus.application.WebAppBootstrapper;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Formatter;
@@ -19,22 +19,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.params.KeyParameter;
+import org.hibernate.Session;
 
 /**
  *
@@ -42,52 +34,44 @@ import org.bouncycastle.crypto.params.KeyParameter;
  */
 @Entity
 @XmlRootElement
-@Inheritance(strategy = InheritanceType.JOINED)
+
 public class AppUser extends AppPerson implements Serializable {
 
     static public final int hashAndSaltSize = 32;
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @XmlElement
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+
+    public AppUser() {
+        super();
+    }
 
     @XmlElement
-    private String username;
+    protected String username;
 
     @XmlElement
-    private String secret1;
+    protected String secret1;
     @XmlElement
-    private String secret2;
+    protected String secret2;
     @XmlElement
-    private String secret3;
+    protected String secret3;
 
     @XmlElement
-    private int securityIndex;
+    protected int securityIndex;
 
     @XmlElement
-    private boolean disabled;
-
-    @XmlElement
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date lastLogin;
+    protected boolean disabled;
 
     @XmlElement
     @Temporal(TemporalType.TIMESTAMP)
-    private Date lastLoginFailure;
+    protected Date lastLogin;
+
+    @XmlElement
+    @Temporal(TemporalType.TIMESTAMP)
+    protected Date lastLoginFailure;
 
     @XmlElement
     @OneToMany(mappedBy = "appUser", cascade = {CascadeType.ALL})
-    private Set<AppUserGroupMembership> memberships;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    protected Set<AppUserGroupMembership> memberships;
 
     @Override
     public int hashCode() {
@@ -365,18 +349,14 @@ public class AppUser extends AppPerson implements Serializable {
     }
 
     public static AppUser QuickCreateNewAppUser(String username, String secret, String email) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
-        EntityManager em = emf.createEntityManager();
 
-        quickCreateNewUser:
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
+
+        main:
         {
-            em.getTransaction().begin();
+            Session session = mhu.getNewSession();
 
-            Query q1 = em.createQuery("SELECT u FROM AppUser u WHERE u.username = :username");
-            q1.setParameter("username", username);
-            q1.setMaxResults(1);
-            q1.setFirstResult(0);
-            List<AppUser> appUsers = q1.getResultList();
+            List<Object> appUsers = mhu.executeQuery(session, "SELECT u FROM AppUser u WHERE u.username = :username", new Object[][]{{"username", username}}, 0, 1);
 
             if (appUsers.isEmpty()) {
                 AppUser newUser = new AppUser();
@@ -391,20 +371,52 @@ public class AppUser extends AppPerson implements Serializable {
                     Logger.getLogger(WebAppBootstrapper.class.getName()).log(Level.SEVERE, null, ex);
                     return null;
                 }
-                em.persist(newUser);
-                em.flush();
-                em.refresh(newUser);
-                em.getTransaction().commit();
+                mhu.SimpleSaveOrUpdate(newUser, session);
                 return newUser;
 
             } else {
-                em.getTransaction().commit();
-                return appUsers.get(0);
+
+                return (AppUser) appUsers.get(0);
             }
 
         }
 
     }
-    
+
+    public static AppUser findUserOrNull(String username) {
+
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
+
+        return (AppUser) mhu.findOrNull(mhu.getNewSession(), "SELECT u FROM AppUser u WHERE u.username = :username", new Object[][]{{"username", username}});
+
+    }
+
+    public boolean isMemberOf(String groupSecurityLabel) {
+
+        for (AppUserGroupMembership augm : this.getMemberships()) {
+            if (augm.getAppUserGroup().getSecurityLabel().equals(groupSecurityLabel)) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    public static boolean isMemberOf(String username, String groupSecurityLabel) {
+        AppUser foundUser = AppUser.findUserOrNull(username);
+
+        if (foundUser == null) {
+            return false;
+        } else {
+            for (AppUserGroupMembership augm : foundUser.getMemberships()) {
+                if (augm.getAppUserGroup().getSecurityLabel().equals(groupSecurityLabel)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
 }

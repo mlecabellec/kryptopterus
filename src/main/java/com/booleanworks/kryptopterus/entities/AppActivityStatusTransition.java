@@ -15,22 +15,19 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
+
+import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.Session;
 
 /**
  *
@@ -42,27 +39,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppActivityStatusTransition extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @XmlElement
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public AppActivityStatusTransition() {
+        super();
     }
 
     @XmlElement
-    private AppActivityStatus fromStatus;
+    @ManyToOne
+    protected AppActivityStatus fromStatus;
 
     @XmlElement
-    private AppActivityStatus toStatus;
+    @ManyToOne
+    protected AppActivityStatus toStatus;
 
     @XmlElement
-    private AppUserGroup allowedGroup;
+    @OneToOne
+    protected AppUserGroup allowedGroup;
 
     @Override
     public int hashCode() {
@@ -114,24 +106,22 @@ public class AppActivityStatusTransition extends AppObject implements Serializab
     }
 
     public static AppActivityStatusTransition findOrCreate(String fromStatus, String toStatus, String allowedGroup) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
-        EntityManager em = emf.createEntityManager();
+        
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance() ; 
 
-        quickCreateNewUser:
+        main:
         {
-            em.getTransaction().begin();
+            Session session = mhu.getNewSession() ;
 
             AppActivityStatus fromStatusObject = AppActivityStatus.findOrCreate(fromStatus, fromStatus);
             AppActivityStatus toStatusObject = AppActivityStatus.findOrCreate(toStatus, toStatus);
             AppUserGroup allowedGroupObject = AppUserGroup.findOrCreateAppUserGroup(allowedGroup);
 
-            Query q1 = em.createQuery("SELECT a FROM AppActivityStatusTransition a WHERE (a.fromStatus = :fromStatus) AND (a.toStatus = :toStatus) AND (a.allowedGroup = :allowedGroup)");
-            q1.setParameter("fromStatus", fromStatusObject);
-            q1.setParameter("toStatus", toStatusObject);
-            q1.setParameter("allowedGroup", allowedGroupObject);
-            q1.setMaxResults(1);
-            q1.setFirstResult(0);
-            List<AppActivityStatusTransition> appActivityStatusTransitions = q1.getResultList();
+            List<Object> appActivityStatusTransitions = mhu.executeQuery(session,
+                    "SELECT a FROM AppActivityStatusTransition a WHERE (a.fromStatus = :fromStatus) AND (a.toStatus = :toStatus) AND (a.allowedGroup = :allowedGroup)",
+                    new Object[][] {{"fromStatus", fromStatusObject},
+                        {"toStatus", toStatusObject} ,
+                        {"allowedGroup", allowedGroupObject}}, 0, 1);
 
             if (appActivityStatusTransitions.isEmpty()) {
                 AppActivityStatusTransition newAppActivityStatusTransitions = new AppActivityStatusTransition();
@@ -139,19 +129,16 @@ public class AppActivityStatusTransition extends AppObject implements Serializab
                 newAppActivityStatusTransitions.setFromStatus(fromStatusObject);
                 newAppActivityStatusTransitions.setToStatus(toStatusObject);
                 newAppActivityStatusTransitions.setAllowedGroup(allowedGroupObject);
-                
-                newAppActivityStatusTransitions.setCreationDate(new Date());
-                newAppActivityStatusTransitions.setModificationDate(new Date());                
 
-                em.persist(newAppActivityStatusTransitions);
-                em.flush();
-                em.refresh(newAppActivityStatusTransitions);
-                em.getTransaction().commit();
+                newAppActivityStatusTransitions.setCreationDate(new Date());
+                newAppActivityStatusTransitions.setModificationDate(new Date());
+
+                mhu.SimpleSaveOrUpdate(newAppActivityStatusTransitions, session);
                 return newAppActivityStatusTransitions;
 
             } else {
-                em.getTransaction().commit();
-                return appActivityStatusTransitions.get(0);
+                
+                return (AppActivityStatusTransition) appActivityStatusTransitions.get(0);
             }
 
         }

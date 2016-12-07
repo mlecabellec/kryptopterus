@@ -17,12 +17,8 @@ package com.booleanworks.kryptopterus.entities;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -35,17 +31,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppActivityGroup extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @XmlElement
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public AppActivityGroup() {
+        super();
     }
 
     @Override
@@ -72,5 +60,5 @@ public class AppActivityGroup extends AppObject implements Serializable {
     public String toString() {
         return "com.booleanworks.kryptopterus.entities.AppActivityGroup[ id=" + id + " ]";
     }
-    
+
 }

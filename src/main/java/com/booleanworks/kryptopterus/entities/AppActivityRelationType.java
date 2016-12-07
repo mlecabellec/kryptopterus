@@ -15,20 +15,16 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
+
+import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.Session;
 
 /**
  *
@@ -40,21 +36,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppActivityRelationType extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @XmlElement
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    
-    @XmlElement
-    private String shortIdentifier ;
 
-    public Long getId() {
-        return id;
+    public AppActivityRelationType() {
+        super();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @XmlElement
+    private String shortIdentifier;
 
     @Override
     public int hashCode() {
@@ -88,43 +76,33 @@ public class AppActivityRelationType extends AppObject implements Serializable {
     public void setShortIdentifier(String shortIdentifier) {
         this.shortIdentifier = shortIdentifier;
     }
-    
-    
+
     public static AppActivityRelationType findOrCreate(String displayName, String shortIdentifier) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
-        EntityManager em = emf.createEntityManager();
+        
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance() ; 
 
-        quickCreateNewUser:
+        main:
         {
-            em.getTransaction().begin();
+            Session session = mhu.getNewSession() ;
 
-            Query q1 = em.createQuery("SELECT a FROM AppActivityRelationType a WHERE a.shortIdentifier = :shortIdentifier");
-            q1.setParameter("shortIdentifier", shortIdentifier);
-            q1.setMaxResults(1);
-            q1.setFirstResult(0);
-            List<AppActivityRelationType> appActivityRelationTypes = q1.getResultList();
+            List<Object> appActivityRelationTypes = mhu.executeQuery(session, "SELECT a FROM AppActivityRelationType a WHERE a.shortIdentifier = :shortIdentifier", new Object[][] {{"shortIdentifier", shortIdentifier}}, 0, 1);
 
             if (appActivityRelationTypes.isEmpty()) {
                 AppActivityRelationType newAppActivityRelationType = new AppActivityRelationType();
- 
+
                 newAppActivityRelationType.setShortIdentifier(shortIdentifier);
                 newAppActivityRelationType.setDisplayName(displayName);
-               
-                
-                em.persist(newAppActivityRelationType);
-                em.flush();
-                em.refresh(newAppActivityRelationType);
-                em.getTransaction().commit();
+
+                mhu.SimpleSaveOrUpdate(newAppActivityRelationType, session);
                 return newAppActivityRelationType;
 
             } else {
-                em.getTransaction().commit();
-                return appActivityRelationTypes.get(0);
+
+                return (AppActivityRelationType) appActivityRelationTypes.get(0);
             }
 
         }
 
     }
-    
-    
+
 }

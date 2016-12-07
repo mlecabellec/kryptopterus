@@ -10,6 +10,7 @@
 
     <http auto-config="true">
         <intercept-url pattern="/s/home/post" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/s/activities/**" access="hasRole('ROLE_USER')"/>
         <intercept-url pattern="/s/home/get" access="permitAll"/> 
         <intercept-url pattern="/s/home/me" access="permitAll"/> 
         <intercept-url pattern="/s/home/test001" access="permitAll"/> 

@@ -21,17 +21,8 @@ import com.booleanworks.kryptopterus.entities.AppActivityStatusTransition;
 import com.booleanworks.kryptopterus.entities.AppUser;
 import com.booleanworks.kryptopterus.entities.AppUserGroup;
 import com.booleanworks.kryptopterus.entities.AppUserGroupMembership;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -47,22 +38,35 @@ public class WebAppBootstrapper implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
-        EntityManager em = emf.createEntityManager();
-
+ 
+       
+        System.out.println("Bootstrap-CP0010");
+        
         AppUser adminUser = AppUser.QuickCreateNewAppUser("admin", "4dm1n", "mickael.lecabellec@booleaworks.com") ;
         AppUser testUser = AppUser.QuickCreateNewAppUser("test001", "test001", "mickael.lecabellec@booleaworks.com") ;
+
+        System.out.println("Bootstrap-CP0020");
+
         
         AppUserGroup adminRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_ADMIN") ;
         AppUserGroup userRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_USER") ;
+        
+        System.out.println("Bootstrap-CP0030");
+        
         
         AppUserGroupMembership.quickAddMember(adminRole, adminUser);
         AppUserGroupMembership.quickAddMember(userRole, adminUser);
         
         AppUserGroupMembership.quickAddMember(userRole, testUser);
         
+        System.out.println("Bootstrap-CP0040");
+        
+        
         Calendar c = Calendar.getInstance() ;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        
+        System.out.println("Bootstrap-CP0050");
+        
         
         AppActivityStatus.findOrCreate("New activity from app bootstrap", "BOOTSTRAP_NEW");
         AppActivityStatus.findOrCreate("Finished (bootstrapactivity", "BOOTSTRAP_FINISHED");
@@ -71,7 +75,8 @@ public class WebAppBootstrapper implements ServletContextListener {
         AppActivity newActivity001 = AppActivity.findOrCreateWithBusinessIdentifier("Check application", "BOOTSTRAP001", "BOOTSTRAP_NEW");
         AppActivity newActivity002 = AppActivity.findOrCreateWithBusinessIdentifier("Check application at " + simpleDateFormat.format(c.getTime()), "BOOTSTRAP  + simpleDateFormat.format(c.getTime())" , "BOOTSTRAP_NEW");
 
-        
+        System.out.println("Bootstrap-CP0060");
+
         
     }
 

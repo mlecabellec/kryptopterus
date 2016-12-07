@@ -15,19 +15,17 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
+import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.Session;
 
 /**
  *
@@ -35,27 +33,22 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @XmlRootElement
+@Inheritance(strategy = InheritanceType.JOINED)
 public class AppUserGroupMembership extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @XmlElement
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
-    @XmlElement
-    private AppUserGroup appUserGroup;
-
-    @XmlElement
-    private AppUser appUser;
-
-    public Long getId() {
-        return id;
+    public AppUserGroupMembership() {
+        super();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @XmlElement
+    @ManyToOne
+    protected AppUserGroup appUserGroup;
+
+    @XmlElement
+    @ManyToOne
+    protected AppUser appUser;
 
     @Override
     public int hashCode() {
@@ -99,19 +92,16 @@ public class AppUserGroupMembership extends AppObject implements Serializable {
     }
 
     public static void quickAddMember(AppUserGroup appUserGroup, AppUser appUser) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
-        EntityManager em = emf.createEntityManager();
 
-        quickCreateNewUser:
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
+
+        main:
         {
-            em.getTransaction().begin();
+            Session session = mhu.getNewSession();
 
-            Query q1 = em.createQuery("SELECT m FROM AppUserGroupMembership m WHERE (m.appUserGroup = :appUserGroup) AND (m.appUser = :appUser)");
-            q1.setParameter("appUserGroup", appUserGroup);
-            q1.setParameter("appUser", appUser);
-            q1.setMaxResults(1);
-            q1.setFirstResult(0);
-            List<AppUserGroupMembership> appUserGroupMemberships = q1.getResultList();
+            List<Object> appUserGroupMemberships = mhu.executeQuery(session,
+                    "SELECT m FROM AppUserGroupMembership m WHERE (m.appUserGroup = :appUserGroup) AND (m.appUser = :appUser)",
+                    new Object[][]{{"appUserGroup", appUserGroup}, {"appUser", appUser}}, 0, 1);
 
             if (appUserGroupMemberships.isEmpty()) {
                 AppUserGroupMembership newAppUserGroupMembership = new AppUserGroupMembership();
@@ -120,14 +110,10 @@ public class AppUserGroupMembership extends AppObject implements Serializable {
                 newAppUserGroupMembership.setCreationDate(new Date());
                 newAppUserGroupMembership.setModificationDate(new Date());
 
-                em.persist(newAppUserGroupMembership);
-                em.flush();
-                em.refresh(newAppUserGroupMembership);
-                //em.refresh(appUserGroup);
-                em.getTransaction().commit();
+                mhu.SimpleSaveOrUpdate(newAppUserGroupMembership, session);
 
             } else {
-                em.getTransaction().commit();
+                //TODO ?
 
             }
 

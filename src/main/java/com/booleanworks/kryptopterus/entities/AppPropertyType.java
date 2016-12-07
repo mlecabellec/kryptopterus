@@ -17,10 +17,6 @@ package com.booleanworks.kryptopterus.entities;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -32,20 +28,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppPropertyType extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @XmlElement
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    
-    private String label ;
 
-    public Long getId() {
-        return id;
+    public AppPropertyType() {
+        super();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String label;
 
     @Override
     public int hashCode() {
@@ -79,7 +67,5 @@ public class AppPropertyType extends AppObject implements Serializable {
     public void setLabel(String label) {
         this.label = label;
     }
-    
-    
-    
+
 }

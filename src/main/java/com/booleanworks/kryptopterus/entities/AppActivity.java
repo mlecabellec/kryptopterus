@@ -15,32 +15,23 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
-import com.booleanworks.kryptopterus.application.WebAppBootstrapper;
-import com.opencsv.bean.CsvBindByName;
+
+import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.Session;
 
 /**
  *
@@ -52,48 +43,41 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppActivity extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    
-    @XmlElement
-    @OneToMany(mappedBy = "firstActivity",cascade = {CascadeType.ALL})
-    private Set<AppActivityRelation> relationsAsFirstActivity ;    
 
-    @XmlElement
-    @OneToMany(mappedBy = "secondActivity",cascade = {CascadeType.ALL})
-    private Set<AppActivityRelation> relationsAsSecondActivity ;     
-    
-    @XmlElement
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date plannedStart ;
-
-    @XmlElement
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date plannedEnd ;
-
-    @XmlElement
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date realStart ;
-
-    @XmlElement
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date realEnd ;
-    
-    @XmlElement
-    private AppActivityStatus status ;
-    
-    @XmlElement
-    private String businessIdentifier ;
-    
-    
-    public Long getId() {
-        return id;
+    public AppActivity() {
+        super();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @XmlElement
+    @OneToMany(mappedBy = "firstActivity")
+    protected Set<AppActivityRelation> relationsAsFirstActivity;
+
+    @XmlElement
+    @OneToMany(mappedBy = "secondActivity")
+    protected Set<AppActivityRelation> relationsAsSecondActivity;
+
+    @XmlElement
+    @Temporal(TemporalType.TIMESTAMP)
+    protected Date plannedStart;
+
+    @XmlElement
+    @Temporal(TemporalType.TIMESTAMP)
+    protected Date plannedEnd;
+
+    @XmlElement
+    @Temporal(TemporalType.TIMESTAMP)
+    protected Date realStart;
+
+    @XmlElement
+    @Temporal(TemporalType.TIMESTAMP)
+    protected Date realEnd;
+
+    @XmlElement
+    @ManyToOne
+    protected AppActivityStatus status;
+
+    @XmlElement
+    protected String businessIdentifier;
 
     @Override
     public int hashCode() {
@@ -135,13 +119,13 @@ public class AppActivity extends AppObject implements Serializable {
     public void setRelationsAsSecondActivity(Set<AppActivityRelation> relationsAsSecondActivity) {
         this.relationsAsSecondActivity = relationsAsSecondActivity;
     }
-    
-   public Set<AppActivityRelation> getRelations() {
-       
+
+    public Set<AppActivityRelation> getRelations() {
+
         HashSet<AppActivityRelation> result = new HashSet<>();
         result.addAll(this.getRelationsAsFirstActivity());
         result.addAll(this.getRelationsAsSecondActivity());
-       
+
         return result;
     }
 
@@ -193,48 +177,37 @@ public class AppActivity extends AppObject implements Serializable {
         this.businessIdentifier = businessIdentifier.toUpperCase().toUpperCase().replaceAll("[^A-Z0-9_-]", "");
     }
 
-    
-
     public static AppActivity findOrCreateWithBusinessIdentifier(String displayName, String businessIdentifier, String statusIdentifier) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("kryptopterus_pu1");
-        EntityManager em = emf.createEntityManager();
+        
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance() ; 
 
-        quickCreateNewUser:
+        main:
         {
-            em.getTransaction().begin();
+            Session session = mhu.getNewSession() ;
 
-            Query q1 = em.createQuery("SELECT a FROM AppActivity a WHERE a.businessIdentifier = :businessIdentifier");
-            q1.setParameter("businessIdentifier", businessIdentifier);
-            q1.setMaxResults(1);
-            q1.setFirstResult(0);
-            List<AppActivity> appActivities = q1.getResultList();
+            List<Object> appActivities = mhu.executeQuery(session, "SELECT a FROM AppActivity a WHERE a.businessIdentifier = :businessIdentifier", new Object[][] {{"businessIdentifier", businessIdentifier}}, 0, 1);
 
             if (appActivities.isEmpty()) {
                 AppActivity newAppActivity = new AppActivity();
- 
+
                 newAppActivity.setBusinessIdentifier(businessIdentifier);
                 newAppActivity.setDisplayName(displayName);
-                
+
                 newAppActivity.setStatus(AppActivityStatus.findOrCreate(statusIdentifier, statusIdentifier));
-                
+
                 newAppActivity.setCreationDate(new Date());
-                newAppActivity.setModificationDate(new Date());                
-               
-                
-                em.persist(newAppActivity);
-                em.flush();
-                em.refresh(newAppActivity);
-                em.getTransaction().commit();
+                newAppActivity.setModificationDate(new Date());
+
+                mhu.SimpleSaveOrUpdate(newAppActivity, session);
                 return newAppActivity;
 
             } else {
-                em.getTransaction().commit();
-                return appActivities.get(0);
+                
+                return (AppActivity) appActivities.get(0);
             }
 
         }
 
     }
-   
-    
+
 }

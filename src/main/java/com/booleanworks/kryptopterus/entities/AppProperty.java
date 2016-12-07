@@ -17,13 +17,9 @@ package com.booleanworks.kryptopterus.entities;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.OneToOne;
-import javax.xml.bind.annotation.XmlElement;
+import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -36,28 +32,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppProperty extends AppObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @XmlElement
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    
-    private AppPropertyTemplate sourceTemplate ;
-    
 
-    private AppObject parentObject ;
-    
-    private String propertyKey ;
-    
-    private Serializable value ;
-    
-
-    public Long getId() {
-        return id;
+    public AppProperty() {
+        super();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @ManyToOne
+    protected AppPropertyTemplate sourceTemplate;
+
+    @ManyToOne
+    protected AppObject parentObject;
+
+    protected String propertyKey;
+
+    protected Serializable value;
 
     @Override
     public int hashCode() {
@@ -108,8 +96,6 @@ public class AppProperty extends AppObject implements Serializable {
         this.propertyKey = propertyKey;
     }
 
-
-
     public Serializable getValue() {
         return value;
     }
@@ -117,7 +103,5 @@ public class AppProperty extends AppObject implements Serializable {
     public void setValue(Serializable value) {
         this.value = value;
     }
-    
-    
-    
+
 }

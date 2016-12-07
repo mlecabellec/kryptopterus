@@ -15,8 +15,6 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
-import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvDate;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -26,6 +24,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -41,41 +40,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Inheritance(strategy=InheritanceType.JOINED)
 public class AppObject implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
+
+    public AppObject() {
+        super();
+    }
+
     @Id
     @XmlElement
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    
-    @OneToMany(mappedBy = "parentObject")
-    private Set<AppProperty> properties ;
-    
-    @XmlElement
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date creationDate ;
-    
-    @XmlElement
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modificationDate ;
-    
-    @XmlElement
-    private String displayName ; 
-    
-    @XmlElement
-    private AppUser creator ;
-    
-    @XmlElement
-    private AppUser lastEditor;
-    
-    @XmlElement
-    private AppUserGroup authorizedForView ;
-    
-    @XmlElement
-    private AppUserGroup authorizedForModification;
-    
-    @XmlElement
-    private AppUserGroup authorizedForDeletion;
-    
+    protected Long id;
 
     public Long getId() {
         return id;
@@ -84,6 +58,40 @@ public class AppObject implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
+
+    @OneToMany(mappedBy = "parentObject")
+    protected Set<AppProperty> properties;
+
+    @XmlElement
+    @Temporal(TemporalType.TIMESTAMP)
+    protected Date creationDate;
+
+    @XmlElement
+    @Temporal(TemporalType.TIMESTAMP)
+    protected Date modificationDate;
+
+    @XmlElement
+    protected String displayName;
+
+    @XmlElement
+    @ManyToOne
+    protected AppUser creator;
+
+    @XmlElement
+    @ManyToOne
+    protected AppUser lastEditor;
+
+    @XmlElement
+    @ManyToOne
+    protected AppUserGroup authorizedForView;
+
+    @XmlElement
+    @ManyToOne
+    protected AppUserGroup authorizedForModification;
+
+    @XmlElement
+    @ManyToOne
+    protected AppUserGroup authorizedForDeletion;
 
     @Override
     public int hashCode() {
@@ -181,7 +189,5 @@ public class AppObject implements Serializable {
     public void setAuthorizedForDeletion(AppUserGroup authorizedForDeletion) {
         this.authorizedForDeletion = authorizedForDeletion;
     }
-    
-    
-    
+
 }

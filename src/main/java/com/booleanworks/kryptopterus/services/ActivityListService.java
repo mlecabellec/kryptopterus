@@ -16,31 +16,12 @@
 package com.booleanworks.kryptopterus.services;
 
 import com.booleanworks.kryptopterus.entities.AppActivity;
-import com.booleanworks.kryptopterus.entities.AppActivityRelation;
-import com.booleanworks.kryptopterus.services.transients.Me;
-import com.opencsv.CSVWriter;
-import com.opencsv.bean.BeanToCsv;
-import com.opencsv.bean.ColumnPositionMappingStrategy;
-import com.opencsv.bean.HeaderColumnNameMappingStrategy;
-import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -49,7 +30,7 @@ import javax.ws.rs.core.MediaType;
  *
  * @author vortigern
  */
-@Path("activityList")
+@Path("activities")
 public class ActivityListService {
 
     @Context
@@ -62,6 +43,18 @@ public class ActivityListService {
     public Boolean doTest001() {
 
         return Boolean.FALSE;
+    }
+    
+    
+    @GET
+    @Path("search/{searchString}")
+    @Produces(MediaType.APPLICATION_JSON)
+    //@Consumes(MediaType.APPLICATION_JSON)    
+    public Set<AppActivity> simpleActivitySearch(@PathParam("searchString") String searchString)
+    {
+        HashSet<AppActivity> result = new HashSet<>() ;
+        
+        return result ;
     }
 
 }

@@ -18,12 +18,8 @@ package com.booleanworks.kryptopterus.entities;
 import com.booleanworks.kryptopterus.definitions.AppObjectTemplate;
 import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -36,17 +32,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppActivityRelationTemplate extends AppObject implements Serializable, AppObjectTemplate<AppActivityRelation> {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @XmlElement
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public AppActivityRelationTemplate() {
+        super();
     }
 
     @Override
@@ -78,5 +66,5 @@ public class AppActivityRelationTemplate extends AppObject implements Serializab
     public AppActivityRelation getInstance() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

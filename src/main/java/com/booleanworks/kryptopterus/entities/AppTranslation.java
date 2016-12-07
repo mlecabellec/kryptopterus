@@ -20,6 +20,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -28,14 +31,19 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @XmlRootElement
+@Inheritance(strategy=InheritanceType.JOINED)
 public class AppTranslation implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
+
+    public AppTranslation() {
+        super();
+    }
+
     @Id
+    @XmlElement
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    
-    
+    protected Long id;
 
     public Long getId() {
         return id;
@@ -44,16 +52,16 @@ public class AppTranslation implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    
-    public String sourceContext ;
-    public String sourceIdentifierCode ;
-    public String sourceCssSelector ;
-    public String sourceText ;
 
-    public String translatedContext ;
-    public String translatedIdentifierCode ;
-    public String translatedCssSelector ;
-    public String translatedText ;    
+    public String sourceContext;
+    public String sourceIdentifierCode;
+    public String sourceCssSelector;
+    public String sourceText;
+
+    public String translatedContext;
+    public String translatedIdentifierCode;
+    public String translatedCssSelector;
+    public String translatedText;
 
     @Override
     public int hashCode() {
@@ -144,6 +152,4 @@ public class AppTranslation implements Serializable {
         this.translatedText = translatedText;
     }
 
-
-    
 }
