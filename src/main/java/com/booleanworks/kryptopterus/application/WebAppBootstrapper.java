@@ -50,6 +50,7 @@ public class WebAppBootstrapper implements ServletContextListener {
         
         AppUserGroup adminRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_ADMIN") ;
         AppUserGroup userRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_USER") ;
+        AppUserGroup anonymousRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_ANONYMOUS");
         
         System.out.println("Bootstrap-CP0030");
         

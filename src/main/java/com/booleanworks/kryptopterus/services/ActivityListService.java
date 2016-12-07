@@ -15,9 +15,13 @@
  */
 package com.booleanworks.kryptopterus.services;
 
+import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import com.booleanworks.kryptopterus.entities.AppActivity;
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -25,6 +29,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import org.hibernate.Session;
 
 /**
  *
@@ -52,7 +57,19 @@ public class ActivityListService {
     //@Consumes(MediaType.APPLICATION_JSON)    
     public Set<AppActivity> simpleActivitySearch(@PathParam("searchString") String searchString)
     {
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
+        Session session = mhu.getNewSession() ;
+        CriteriaBuilder criteriaBuilder =  session.getCriteriaBuilder() ;
+        CriteriaQuery<AppActivity> criteriaQuery = criteriaBuilder.createQuery(AppActivity.class) ;
         HashSet<AppActivity> result = new HashSet<>() ;
+        
+        Principal userPrincipal = request.getUserPrincipal() ;
+        
+        searchString = searchString == null ? "" : searchString ;
+        searchString = searchString.trim() ;
+
+
+        
         
         return result ;
     }
