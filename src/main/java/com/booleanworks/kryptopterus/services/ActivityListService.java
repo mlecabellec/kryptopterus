@@ -17,9 +17,11 @@ package com.booleanworks.kryptopterus.services;
 
 import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import com.booleanworks.kryptopterus.entities.AppActivity;
+import com.booleanworks.kryptopterus.utilities.SearchExpressionParser;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +62,7 @@ public class ActivityListService {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
         Session session = mhu.getNewSession() ;
         CriteriaBuilder criteriaBuilder =  session.getCriteriaBuilder() ;
-        CriteriaQuery<AppActivity> criteriaQuery = criteriaBuilder.createQuery(AppActivity.class) ;
+        //CriteriaQuery<AppActivity> criteriaQuery = criteriaBuilder.createQuery(AppActivity.class) ;
         HashSet<AppActivity> result = new HashSet<>() ;
         
         Principal userPrincipal = request.getUserPrincipal() ;
@@ -68,8 +70,9 @@ public class ActivityListService {
         searchString = searchString == null ? "" : searchString ;
         searchString = searchString.trim() ;
 
-
-        
+        CriteriaQuery<AppActivity> cq1 = SearchExpressionParser.buildSelectCriteriaQueryFromExpression(searchString, session, AppActivity.class) ;
+        Query q1 =  session.createQuery(cq1) ;
+        result.addAll(q1.getResultList());
         
         return result ;
     }

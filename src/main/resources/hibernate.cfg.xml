@@ -10,7 +10,7 @@
     <property name="hibernate.current_session_context_class">managed</property>
     <property name="hibernate.hbm2ddl.auto">update</property>
     <property name="hibernate.hbm2ddl.delimiter">;</property>
-    <property name="javax.persistence.schema-generation.database.action">drop-and-create</property>
+    <property name="javax.persistence.schema-generation.database.action">create</property>
     <property name="javax.persistence.schema-generation.scripts.action">drop-and-create</property>
     <property name="javax.persistence.schema-generation.scripts.create-target">db_create.sql</property>
     <property name="javax.persistence.schema-generation.scripts.drop-target">db_drop.sql</property>
