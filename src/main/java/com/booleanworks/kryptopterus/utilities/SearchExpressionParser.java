@@ -387,7 +387,7 @@ public class SearchExpressionParser extends BaseParser<Object> {
             Expression firstExpression = SearchExpressionParser.nodeToExpression(firstExpressionNode, s, q, cb, expr, targetClass);
             Expression secondExpression = SearchExpressionParser.nodeToExpression(secondExpressionNode, s, q, cb, expr, targetClass);
 
-            if (matchedSubString.trim().matches(">=*")) {
+            if (matchedSubString.trim().matches(">=")) {
                 return cb.greaterThanOrEqualTo(firstExpression, secondExpression);
 
             } else if (matchedSubString.trim().matches("<=")) {
