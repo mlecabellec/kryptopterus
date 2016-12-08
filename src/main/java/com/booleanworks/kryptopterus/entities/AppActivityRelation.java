@@ -15,6 +15,7 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -40,10 +41,12 @@ public class AppActivityRelation extends AppObject implements Serializable {
 
     @XmlElement
     @ManyToOne(targetEntity = AppActivity.class)
+    @JsonBackReference("relationsAsFirstActivity")
     protected AppActivity firstActivity;
 
     @XmlElement
     @ManyToOne(targetEntity = AppActivity.class)
+    @JsonBackReference("relationsAsSecondActivity")
     protected AppActivity secondActivity;
 
     @XmlElement

@@ -105,7 +105,9 @@ public class SearchExpressionParserTest {
             "[modificationDate] > 2001-01-01 , [modificationDate] < 2021-01-01",
             "displayName = \"aa aa aa\"",
             "\"aa aa aa aa\"",
-            "securityIndex > 10"};
+            "securityIndex > 10",
+            "[id] = 15",
+            "[id]=15"};
 
         for (String cCase : otherCases) {
             System.out.println("cCase:" + cCase);

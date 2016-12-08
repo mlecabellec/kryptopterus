@@ -75,7 +75,7 @@ public class WebAppBootstrapper implements ServletContextListener {
         AppActivityStatusTransition.findOrCreate("BOOTSTRAP_NEW", "BOOTSTRAP_FINISHED", "ROLE_ADMIN");
 
         AppActivity newActivity001 = AppActivity.findOrCreateWithBusinessIdentifier("Check application", "BOOTSTRAP001", "BOOTSTRAP_NEW");
-        AppActivity newActivity002 = AppActivity.findOrCreateWithBusinessIdentifier("Check application at " + simpleDateFormat.format(c.getTime()), "BOOTSTRAP  + simpleDateFormat.format(c.getTime())", "BOOTSTRAP_NEW");
+        AppActivity newActivity002 = AppActivity.findOrCreateWithBusinessIdentifier("Check application at " + simpleDateFormat.format(c.getTime()), "BOOTSTRAP"  + simpleDateFormat.format(c.getTime()), "BOOTSTRAP_NEW");
 
         System.out.println("Bootstrap-CP0060");
 
@@ -83,16 +83,18 @@ public class WebAppBootstrapper implements ServletContextListener {
 
         for (int ct1 = 0; ct1 < 500; ct1++) {
             AppActivity newTestActivity = AppActivity.findOrCreateWithBusinessIdentifier(
-                    "Test activity " + simpleDateFormat.format(c.getTime()), "BOOTSTRAP"  + simpleDateFormat.format(c.getTime()), "BOOTSTRAP_NEW");
+                    "Test activity " + simpleDateFormat.format(c.getTime()), "BOOTSTRAP-"  + ct1, "BOOTSTRAP_NEW");
 
             testActivities.add(newTestActivity);
         }
+        
+
 
 
         
         Random random = new Random();
 
-        for (int ct1 = 0; ct1 < 500; ct1++) {
+        for (int ct2 = 0; ct2 < 300; ct2++) {
             AppActivity a1 = testActivities.get(random.nextInt(testActivities.size()));
             AppActivity a2 = testActivities.get(random.nextInt(testActivities.size()));
 

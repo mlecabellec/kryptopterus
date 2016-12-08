@@ -17,6 +17,7 @@ package com.booleanworks.kryptopterus.entities;
 
 
 import com.booleanworks.kryptopterus.application.MainHibernateUtil;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -50,10 +51,12 @@ public class AppActivity extends AppObject implements Serializable {
 
     @XmlElement
     @OneToMany(mappedBy = "firstActivity")
+    @JsonManagedReference("firstActivity")
     protected Set<AppActivityRelation> relationsAsFirstActivity;
 
     @XmlElement
     @OneToMany(mappedBy = "secondActivity")
+    @JsonManagedReference("secondActivity")
     protected Set<AppActivityRelation> relationsAsSecondActivity;
 
     @XmlElement
@@ -199,6 +202,7 @@ public class AppActivity extends AppObject implements Serializable {
                 newAppActivity.setModificationDate(new Date());
 
                 mhu.SimpleSaveOrUpdate(newAppActivity, session);
+
                 return newAppActivity;
 
             } else {

@@ -106,6 +106,7 @@ public class MainHibernateUtil {
             Transaction transaction = this.beginTransaction(session);
 
             session.saveOrUpdate(object);
+            session.flush();
 
             this.commitTransaction(transaction);
         }
@@ -119,6 +120,7 @@ public class MainHibernateUtil {
         Transaction transaction = this.beginTransaction(session);
 
         session.saveOrUpdate(object);
+        session.flush();
 
         this.commitTransaction(transaction);
         this.closeSession(session);

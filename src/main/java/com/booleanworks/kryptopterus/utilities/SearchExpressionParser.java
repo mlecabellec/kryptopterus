@@ -35,6 +35,7 @@ import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.parserunners.ReportingParseRunner;
+import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
 
 /**
@@ -179,6 +180,7 @@ public class SearchExpressionParser extends BaseParser<Object> {
         q.select(root.alias("o"));
 
         ParsingResult p = SearchExpressionParser.getParserResult(expr);
+        System.out.println(ParseTreeUtils.printNodeTree(p));
 
         if (p.parseTreeRoot == null) {
             return q;
@@ -191,17 +193,27 @@ public class SearchExpressionParser extends BaseParser<Object> {
 
     public static Expression nodeToExpression(Node parboiledNode, Session s, CriteriaQuery q, CriteriaBuilder cb, String expr, Class targetClass) {
 
+        System.out.println("com.booleanworks.kryptopterus.utilities.SearchExpressionParser.nodeToExpression()");
+        System.out.println("parboiledNode.getLabel()=" + parboiledNode.getLabel());
+
         String matchedSubString = expr.substring(parboiledNode.getStartIndex(), parboiledNode.getEndIndex());
 
-        HashSet<Field> knownFields = new HashSet<>();
+        System.out.println("matchedSubString=" + matchedSubString);
+
+        ArrayList<Field> knownFields = new ArrayList<>();
 
         Class cClass = targetClass;
         while (cClass != Object.class) {
-            for (Field cField : targetClass.getDeclaredFields()) {
+            System.out.println(" - cClass.getCanonicalName()=" + cClass.getCanonicalName());
+            for (Field cField : cClass.getDeclaredFields()) {
+                System.out.println("    - cField.getName()=" + cField.getName());
                 knownFields.add(cField);
             }
             cClass = cClass.getSuperclass();
         }
+        
+        System.out.println("knownFields.size()=" + knownFields.size());
+        System.out.println("knownFields=" + knownFields);
 
         if (parboiledNode.getLabel().equals("searchExpression")) {
             ArrayList<Predicate> builtPredicatesFromCriteria = new ArrayList<>();
@@ -234,9 +246,16 @@ public class SearchExpressionParser extends BaseParser<Object> {
         } else if (parboiledNode.getLabel().equals("criterionSeparation")) {
             //Dead end which shouldn't be reached
             return cb.isTrue(cb.literal(Boolean.TRUE));
+        } else if (parboiledNode.getLabel().equals("literal")) {
+            return SearchExpressionParser.nodeToExpression((Node) parboiledNode.getChildren().get(0), s, q, cb, expr, targetClass);
+        } else if (parboiledNode.getLabel().equals("searchCriterion")) {
+            return SearchExpressionParser.nodeToExpression((Node) parboiledNode.getChildren().get(0), s, q, cb, expr, targetClass);
         } else if (parboiledNode.getLabel().equals("unaryCriterion")) {
 
             Node subNode = (Node) parboiledNode.getChildren().get(0);
+            if (subNode.getLabel().matches("literal")) {
+                subNode = (Node) parboiledNode.getChildren().get(0);
+            }
 
             ArrayList<Expression> generatedPredicates = new ArrayList<>();
 
@@ -323,7 +342,7 @@ public class SearchExpressionParser extends BaseParser<Object> {
 
         } else if (parboiledNode.getLabel().equals("fieldLiteral")) {
 
-            String targetField = matchedSubString.replaceAll("[", "").replaceAll("]", "").trim();
+            String targetField = matchedSubString.replaceAll("\\[", "").replaceAll("\\]", "").trim();
 
             Field matchedField = null;
             for (Field cField : knownFields) {
@@ -369,22 +388,22 @@ public class SearchExpressionParser extends BaseParser<Object> {
             Expression secondExpression = SearchExpressionParser.nodeToExpression(secondExpressionNode, s, q, cb, expr, targetClass);
 
             if (matchedSubString.trim().matches(">=*")) {
-                return cb.greaterThanOrEqualTo(firstExpression, firstExpression);
+                return cb.greaterThanOrEqualTo(firstExpression, secondExpression);
 
             } else if (matchedSubString.trim().matches("<=")) {
-                return cb.lessThanOrEqualTo(firstExpression, firstExpression);
+                return cb.lessThanOrEqualTo(firstExpression, secondExpression);
 
             } else if (matchedSubString.trim().matches(">")) {
-                return cb.greaterThan(firstExpression, firstExpression);
+                return cb.greaterThan(firstExpression, secondExpression);
 
             } else if (matchedSubString.trim().matches("<")) {
-                return cb.lessThan(firstExpression, firstExpression);
+                return cb.lessThan(firstExpression, secondExpression);
 
             } else if (matchedSubString.trim().matches("=")) {
-                return cb.equal(firstExpression, firstExpression);
+                return cb.equal(firstExpression, secondExpression);
 
             } else if (matchedSubString.trim().matches("~")) {
-                return cb.like(firstExpression, firstExpression);
+                return cb.like(firstExpression, secondExpression);
 
             } else {
                 //Dead end which shouldn't be reached
