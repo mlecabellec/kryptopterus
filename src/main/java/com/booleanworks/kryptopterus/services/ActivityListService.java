@@ -72,6 +72,8 @@ public class ActivityListService {
 
         CriteriaQuery<AppActivity> cq1 = SearchExpressionParser.buildSelectCriteriaQueryFromExpression(searchString, session, AppActivity.class) ;
         Query q1 =  session.createQuery(cq1) ;
+        q1.setMaxResults(1000);
+        q1.setFirstResult(0);
         result.addAll(q1.getResultList());
         
         return result ;
