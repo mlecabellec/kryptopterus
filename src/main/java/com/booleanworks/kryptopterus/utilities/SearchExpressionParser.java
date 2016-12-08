@@ -21,7 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -194,6 +193,16 @@ public class SearchExpressionParser extends BaseParser<Object> {
 
         String matchedSubString = expr.substring(parboiledNode.getStartIndex(), parboiledNode.getEndIndex());
 
+        HashSet<Field> knownFields = new HashSet<>();
+
+        Class cClass = targetClass;
+        while (cClass != Object.class) {
+            for (Field cField : targetClass.getDeclaredFields()) {
+                knownFields.add(cField);
+            }
+            cClass = cClass.getSuperclass();
+        }
+
         if (parboiledNode.getLabel().equals("searchExpression")) {
             ArrayList<Predicate> builtPredicatesFromCriteria = new ArrayList<>();
 
@@ -226,8 +235,74 @@ public class SearchExpressionParser extends BaseParser<Object> {
             //Dead end which shouldn't be reached
             return cb.isTrue(cb.literal(Boolean.TRUE));
         } else if (parboiledNode.getLabel().equals("unaryCriterion")) {
-            //Unable to known how to manage that
-            return cb.isTrue(cb.literal(Boolean.TRUE));
+
+            Node subNode = (Node) parboiledNode.getChildren().get(0);
+
+            ArrayList<Expression> generatedPredicates = new ArrayList<>();
+
+            if (subNode.getLabel().matches("numberLiteral") && subNode.getLabel().contains(".")) {
+                Expression numLiteral = SearchExpressionParser.nodeToExpression(subNode, s, q, cb, expr, targetClass);
+
+                for (Field cField : knownFields) {
+                    if (cField.getType().getCanonicalName().matches("java.lang.Double") || cField.getType().getCanonicalName().matches("java.lang.Real")) {
+                        Root root = (Root) q.getRoots().toArray()[0];
+                        Expression fieldExpression = root.get(cField.getName());
+                        generatedPredicates.add(cb.equal(fieldExpression, numLiteral));
+                    }
+                }
+
+            } else if (subNode.getLabel().matches("numberLiteral") && !subNode.getLabel().contains(".")) {
+                Expression numLiteral = SearchExpressionParser.nodeToExpression(subNode, s, q, cb, expr, targetClass);
+
+                for (Field cField : knownFields) {
+                    if (cField.getType().getCanonicalName().matches("java.lang.Integer") || cField.getType().getCanonicalName().matches("java.lang.Byte")) {
+                        Root root = (Root) q.getRoots().toArray()[0];
+                        Expression fieldExpression = root.get(cField.getName());
+                        generatedPredicates.add(cb.equal(fieldExpression, numLiteral));
+                    }
+                }
+
+            } else if (subNode.getLabel().matches("stringLiteral")) {
+                Expression stringLiteral = SearchExpressionParser.nodeToExpression(subNode, s, q, cb, expr, targetClass);
+
+                for (Field cField : knownFields) {
+                    if (cField.getType().getCanonicalName().matches("java.lang.String")) {
+                        Root root = (Root) q.getRoots().toArray()[0];
+                        Expression fieldExpression = root.get(cField.getName());
+                        generatedPredicates.add(cb.equal(fieldExpression, stringLiteral));
+                        generatedPredicates.add(cb.like(fieldExpression, stringLiteral));
+                    }
+                }
+
+            } else if (subNode.getLabel().startsWith("dateLiteral")) {
+                Expression dateLiteral = SearchExpressionParser.nodeToExpression(subNode, s, q, cb, expr, targetClass);
+
+                for (Field cField : knownFields) {
+                    if (cField.getType().getCanonicalName().matches("java.lang.Date")) {
+                        Root root = (Root) q.getRoots().toArray()[0];
+                        Expression fieldExpression = root.get(cField.getName());
+                        generatedPredicates.add(cb.equal(fieldExpression, dateLiteral));
+                    }
+                }
+
+            }
+
+            if (generatedPredicates.size() == 1) {
+                return generatedPredicates.get(0);
+            } else if (generatedPredicates.size() == 2) {
+                return cb.or(generatedPredicates.get(0), generatedPredicates.get(1));
+            } else if (generatedPredicates.size() > 2) {
+                Expression result = cb.or(generatedPredicates.get(0), generatedPredicates.get(1));
+
+                for (int cPred = 2; cPred < generatedPredicates.size(); cPred++) {
+                    result = cb.or(result, generatedPredicates.get(cPred));
+                }
+
+                return result;
+            } else {
+                //Unable to known how to manage that
+                return cb.isTrue(cb.literal(Boolean.TRUE));
+            }
 
         } else if (parboiledNode.getLabel().equals("binaryCriterion")) {
 
@@ -247,16 +322,6 @@ public class SearchExpressionParser extends BaseParser<Object> {
             return cb.literal(matchedSubString.replaceAll("\"", ""));
 
         } else if (parboiledNode.getLabel().equals("fieldLiteral")) {
-
-            HashSet<Field> knownFields = new HashSet<>();
-
-            Class cClass = targetClass;
-            while (cClass != Object.class) {
-                for (Field cField : targetClass.getDeclaredFields()) {
-                    knownFields.add(cField);
-                }
-                cClass = cClass.getSuperclass();
-            }
 
             String targetField = matchedSubString.replaceAll("[", "").replaceAll("]", "").trim();
 
