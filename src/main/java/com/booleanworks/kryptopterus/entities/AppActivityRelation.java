@@ -75,4 +75,28 @@ public class AppActivityRelation extends AppObject implements Serializable {
         return "com.booleanworks.kryptopterus.entities.AppActivityRelation[ id=" + id + " ]";
     }
 
+    public AppActivity getFirstActivity() {
+        return firstActivity;
+    }
+
+    public void setFirstActivity(AppActivity firstActivity) {
+        this.firstActivity = firstActivity;
+    }
+
+    public AppActivity getSecondActivity() {
+        return secondActivity;
+    }
+
+    public void setSecondActivity(AppActivity secondActivity) {
+        this.secondActivity = secondActivity;
+    }
+
+    public AppActivityRelationType getRelationType() {
+        return relationType;
+    }
+
+    public void setRelationType(AppActivityRelationType relationType) {
+        this.relationType = relationType;
+    }
+
 }
