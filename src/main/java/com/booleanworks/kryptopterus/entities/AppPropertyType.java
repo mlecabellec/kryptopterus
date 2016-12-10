@@ -27,13 +27,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class AppPropertyType extends AppObject implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppPropertyType() {
         super();
     }
 
-    private String label;
+    protected String label;
 
     @Override
     public int hashCode() {
@@ -67,5 +67,7 @@ public class AppPropertyType extends AppObject implements Serializable {
     public void setLabel(String label) {
         this.label = label;
     }
+    
+    
 
 }

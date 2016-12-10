@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Inheritance(strategy=InheritanceType.JOINED)
 public class AppActivityTemplate extends AppObject implements Serializable, AppObjectTemplate<AppActivity> {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppActivityTemplate() {
         super();

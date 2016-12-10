@@ -15,12 +15,15 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
+import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,8 +34,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.OptimisticLockType;
+import org.hibernate.annotations.OptimisticLocking;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  *
@@ -42,6 +53,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@OptimisticLocking(type = OptimisticLockType.VERSION)
+@DynamicUpdate
 //@JsonIdentityReference(alwaysAsId = true)
 public class AppObject implements Serializable {
 
@@ -55,6 +68,13 @@ public class AppObject implements Serializable {
     @XmlElement
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected Long id;
+    
+    @XmlElement
+    @Version
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    protected Long version ;
+    
+    
 
     public Long getId() {
         return id;
@@ -64,15 +84,28 @@ public class AppObject implements Serializable {
         this.id = id;
     }
 
-    @OneToMany(mappedBy = "parentObject")
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+    
+    
+
+    @OneToMany(mappedBy = "parentObject", cascade = {CascadeType.ALL})
+    @JsonManagedReference("parentObject")
     protected Set<AppProperty> properties;
 
     @XmlElement
     @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     protected Date creationDate;
 
     @XmlElement
     @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
     protected Date modificationDate;
 
     @XmlElement
@@ -124,7 +157,58 @@ public class AppObject implements Serializable {
     }
 
     public Set<AppProperty> getProperties() {
+        if(this.properties == null)
+        {
+            this.properties = new HashSet<>();
+        }
         return properties;
+    }
+
+    public void addProperty(AppProperty appProperty) {
+        Session session = MainHibernateUtil.getInstance().getNewSession() ;
+        this.addProperty(appProperty, session);
+    }
+
+    public void addProperty(AppProperty appProperty, Session session) {
+
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
+        Transaction t = mhu.beginTransaction(session);
+
+        if (appProperty.getParentObject() == null) {
+            appProperty.setParentObject(this);
+        }
+
+        if (!this.getProperties().contains(appProperty)) {
+            this.getProperties().add(appProperty);
+        }
+
+        mhu.saveOrUpdate(appProperty, session);
+        mhu.saveOrUpdate(this, session);
+
+        mhu.commitTransaction(t);
+
+    }
+
+    public void removeProperty(AppProperty appProperty) {
+        this.removeProperty(appProperty, MainHibernateUtil.getInstance().getNewSession());
+    }
+
+    public void removeProperty(AppProperty appProperty, Session session) {
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
+        Transaction t = mhu.beginTransaction(session);
+
+        if (appProperty.getParentObject().equals(this)) {
+            appProperty.setParentObject(null);
+
+        }
+
+        if (this.getProperties().contains(appProperty)) {
+            this.getProperties().remove(appProperty);
+        }
+        mhu.delete(appProperty, session);
+        mhu.saveOrUpdate(this, session);
+
+        mhu.commitTransaction(t);
     }
 
     public void setProperties(Set<AppProperty> properties) {

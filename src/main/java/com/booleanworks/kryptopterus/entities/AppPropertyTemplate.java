@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppPropertyTemplate extends AppObject implements Serializable, AppObjectTemplate<AppProperty>  {
 
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppPropertyTemplate() {
         super();

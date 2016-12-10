@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -26,6 +27,7 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 
 /**
  * Hibernate Utility class with a convenient method to get Session Factory
@@ -50,12 +52,13 @@ public class MainHibernateUtil {
     protected MainHibernateUtil() {
         this.serviceRegistryBuilder = new StandardServiceRegistryBuilder();
         this.serviceRegistryBuilder.configure("hibernate.cfg.xml");
-        this.registry =  this.serviceRegistryBuilder.build();
- 
+        this.registry = this.serviceRegistryBuilder.build();
+
         this.metadataSources = new MetadataSources(registry);
         //this.metadataSources.addPackage("com.booleanworks.kryptopterus.entities");
 
         this.sessionFactory = this.metadataSources.buildMetadata().buildSessionFactory();
+
     }
 
     public static MainHibernateUtil getInstance() {
@@ -67,12 +70,37 @@ public class MainHibernateUtil {
     }
 
     public Session getNewSession() {
-        return this.sessionFactory.openSession();
+
+        Session session;
+        session = this.sessionFactory.openSession();
+
+        return session;
+    }
+
+    public Session getCurrentSession() {
+
+        Session session = null;
+
+        try {
+            session = this.sessionFactory.getCurrentSession();
+        } catch (HibernateException he) {
+            session = this.getNewSession();
+        }
+
+        if (session == null || !session.isOpen() || !session.isConnected()) {
+            session = this.getNewSession();
+        }
+
+        if (this.residentSession == null || !this.residentSession.isConnected() || !this.residentSession.isOpen()) {
+            this.residentSession = session;
+        }
+
+        return session;
     }
 
     public synchronized Session getResidentSession() {
         if (this.residentSession == null || !this.residentSession.isConnected() || !this.residentSession.isOpen()) {
-            this.residentSession = this.getNewSession();
+            this.residentSession = this.getCurrentSession();
         }
 
         return this.residentSession;
@@ -82,53 +110,119 @@ public class MainHibernateUtil {
         session.close();
     }
 
-    public Transaction beginTransaction(Session session) {
+    public Transaction beginTransaction() {
+
+        Session session = this.getResidentSession();
+
         Transaction transaction = session.beginTransaction();
 
         return transaction;
     }
 
+    public Transaction beginTransaction(Session session) {
+
+        if (session == null || !session.isConnected() || !session.isOpen()) {
+            session = this.getResidentSession();
+        }
+
+        if (session.isJoinedToTransaction()) {
+            return session.getTransaction();
+        } else {
+            Transaction transaction = session.beginTransaction();
+            return transaction;
+        }
+
+    }
+
     public void commitTransaction(Transaction transaction) {
-        transaction.commit();
+
+        if (transaction.isActive()) {
+            transaction.commit();
+        }
+
     }
 
     public void rollbackTransaction(Transaction transaction) {
-        transaction.rollback();
+
+        if (transaction.isActive()) {
+            transaction.rollback();
+        }
+
     }
 
-    public boolean SimpleSaveOrUpdate(Object object, Session session) {
+    public Object saveOrUpdate(Object object) {
+        return this.saveOrUpdate(object, this.getResidentSession());
+    }
+
+    public Object saveOrUpdate(Object object, Session session) {
+
+        Object result = null;
+
+        if (session == null || !session.isConnected() || !session.isOpen()) {
+            session = this.getResidentSession();
+        }
 
         if (session.isJoinedToTransaction()) {
 
             session.saveOrUpdate(object);
+            if ( !(session.getTransaction().getStatus() == TransactionStatus.MARKED_ROLLBACK)) {
+                session.flush();
+            }
+            result = session.get(object.getClass(), session.getIdentifier(object));
 
         } else {
             Transaction transaction = this.beginTransaction(session);
 
             session.saveOrUpdate(object);
-            session.flush();
+            if (!(transaction.getStatus() == TransactionStatus.MARKED_ROLLBACK)) {
+                session.flush();
+            }
+            result = session.get(object.getClass(), session.getIdentifier(object));
 
             this.commitTransaction(transaction);
         }
 
-        return true;
+        return result;
     }
 
-    public boolean SimpleSaveOrUpdate(Object object) {
+    public Object delete(Object object) {
+        return this.delete(object, this.getNewSession());
+    }
 
-        Session session = this.getNewSession();
-        Transaction transaction = this.beginTransaction(session);
+    public Object delete(Object object, Session session) {
 
-        session.saveOrUpdate(object);
-        session.flush();
+        Object result = null;
 
-        this.commitTransaction(transaction);
-        this.closeSession(session);
+        if (session == null || !session.isConnected() || !session.isOpen()) {
+            session = this.getResidentSession();
+        }
 
-        return true;
+        if (session.isJoinedToTransaction()) {
+
+            session.delete(object);
+            session.flush();
+            //session.detach(object) ;
+            result = object;
+
+        } else {
+            Transaction transaction = this.beginTransaction(session);
+
+            session.delete(object);
+            session.flush();
+            //session.detach(object) ;
+            result = object;
+
+            this.commitTransaction(transaction);
+        }
+
+        return result;
     }
 
     public List<Object> executeQuery(Session session, String query, Object[][] parameters, int offset, int maxResults) {
+
+        if (session == null || !session.isConnected() || !session.isOpen()) {
+            session = this.getResidentSession();
+        }
 
         HashMap<String, Object> paramMap = new HashMap<>();
 
@@ -142,6 +236,11 @@ public class MainHibernateUtil {
     }
 
     public List<Object> executeQuery(Session session, String query, Map<String, Object> parameters, int offset, int maxResults) {
+
+        if (session == null || !session.isConnected() || !session.isOpen()) {
+            session = this.getResidentSession();
+        }
+
         List<Object> result = new ArrayList<Object>();
 
         Query q1 = session.createQuery(query);

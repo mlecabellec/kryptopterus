@@ -17,9 +17,11 @@ package com.booleanworks.kryptopterus.entities;
 
 
 import com.booleanworks.kryptopterus.application.MainHibernateUtil;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -38,18 +40,20 @@ import org.hibernate.Session;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class AppActivityStatusTransition extends AppObject implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppActivityStatusTransition() {
         super();
     }
 
     @XmlElement
-    @ManyToOne
+    @ManyToOne(targetEntity = AppActivityStatus.class , cascade = {CascadeType.ALL})
+    @JsonBackReference("fromTransitions")
     protected AppActivityStatus fromStatus;
 
     @XmlElement
-    @ManyToOne
+    @ManyToOne(targetEntity = AppActivityStatus.class , cascade = {CascadeType.ALL})
+    @JsonBackReference("toTransitions")
     protected AppActivityStatus toStatus;
 
     @XmlElement
@@ -105,16 +109,16 @@ public class AppActivityStatusTransition extends AppObject implements Serializab
         this.allowedGroup = allowedGroup;
     }
 
-    public static AppActivityStatusTransition findOrCreate(String fromStatus, String toStatus, String allowedGroup) {
+    public static AppActivityStatusTransition findOrCreate(String fromStatus, String toStatus, String allowedGroup , Session session) {
         
         MainHibernateUtil mhu = MainHibernateUtil.getInstance() ; 
 
         main:
         {
-            Session session = mhu.getNewSession() ;
+  
 
-            AppActivityStatus fromStatusObject = AppActivityStatus.findOrCreate(fromStatus, fromStatus);
-            AppActivityStatus toStatusObject = AppActivityStatus.findOrCreate(toStatus, toStatus);
+            AppActivityStatus fromStatusObject = AppActivityStatus.findOrCreate(fromStatus, fromStatus, session);
+            AppActivityStatus toStatusObject = AppActivityStatus.findOrCreate(toStatus, toStatus, session);
             AppUserGroup allowedGroupObject = AppUserGroup.findOrCreateAppUserGroup(allowedGroup);
 
             List<Object> appActivityStatusTransitions = mhu.executeQuery(session,
@@ -133,7 +137,7 @@ public class AppActivityStatusTransition extends AppObject implements Serializab
                 newAppActivityStatusTransitions.setCreationDate(new Date());
                 newAppActivityStatusTransitions.setModificationDate(new Date());
 
-                mhu.SimpleSaveOrUpdate(newAppActivityStatusTransitions, session);
+                mhu.saveOrUpdate(newAppActivityStatusTransitions, session);
                 return newAppActivityStatusTransitions;
 
             } else {

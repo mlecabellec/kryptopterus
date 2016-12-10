@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppActivityGroupTemplate extends AppObject implements Serializable, AppObjectTemplate<AppActivityGroup>  {
 
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppActivityGroupTemplate() {
         super();

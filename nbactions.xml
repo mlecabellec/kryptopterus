@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-Clean and build without tests</actionName>
+            <displayName>Clean and build without tests</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-compile without tests</actionName>
+            <displayName>compile without tests</displayName>
+            <goals>
+                <goal>compile</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-clean and compile without test</actionName>
+            <displayName>clean and compile without test</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>compile</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </action>
+    </actions>

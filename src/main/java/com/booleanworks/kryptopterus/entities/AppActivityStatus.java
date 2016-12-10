@@ -15,12 +15,14 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
-
 import com.booleanworks.kryptopterus.application.MainHibernateUtil;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -35,10 +37,10 @@ import org.hibernate.Session;
  */
 @Entity
 @XmlRootElement
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class AppActivityStatus extends AppObject implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppActivityStatus() {
         super();
@@ -48,11 +50,13 @@ public class AppActivityStatus extends AppObject implements Serializable {
     protected String shortIdentifier;
 
     @XmlElement
-    @OneToMany(mappedBy = "fromStatus")
+    @OneToMany(mappedBy = "fromStatus", cascade = {CascadeType.ALL})
+    @JsonManagedReference("fromStatus")
     protected Set<AppActivityStatusTransition> fromTransitions;
 
     @XmlElement
-    @OneToMany(mappedBy = "toStatus")
+    @OneToMany(mappedBy = "toStatus", cascade = {CascadeType.ALL})
+    @JsonManagedReference("toStatus")
     protected Set<AppActivityStatusTransition> toTransitions;
 
     @Override
@@ -104,15 +108,15 @@ public class AppActivityStatus extends AppObject implements Serializable {
         this.shortIdentifier = shortIdentifier.toUpperCase().toUpperCase().replaceAll("[^A-Z0-9_-]", "");
     }
 
-    public static AppActivityStatus findOrCreate(String displayName, String shortIdentifier) {
-        
-        MainHibernateUtil mhu = MainHibernateUtil.getInstance() ; 
+    public static AppActivityStatus findOrCreate(String displayName, String shortIdentifier, Session session) {
+
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
 
         main:
         {
-            Session session = mhu.getNewSession() ;
 
-            List<Object> appActivityStatuses = mhu.executeQuery(session, "SELECT a FROM AppActivityStatus a WHERE a.shortIdentifier = :shortIdentifier", new Object[][] {{"shortIdentifier", shortIdentifier}}, 0, 1);
+
+            List<Object> appActivityStatuses = mhu.executeQuery(session, "SELECT a FROM AppActivityStatus a WHERE a.shortIdentifier = :shortIdentifier", new Object[][]{{"shortIdentifier", shortIdentifier}}, 0, 1);
 
             if (appActivityStatuses.isEmpty()) {
                 AppActivityStatus newActivityStatus = new AppActivityStatus();
@@ -122,7 +126,7 @@ public class AppActivityStatus extends AppObject implements Serializable {
                 newActivityStatus.setCreationDate(new Date());
                 newActivityStatus.setModificationDate(new Date());
 
-                mhu.SimpleSaveOrUpdate(newActivityStatus, session);
+                mhu.saveOrUpdate(newActivityStatus, session);
                 return newActivityStatus;
 
             } else {

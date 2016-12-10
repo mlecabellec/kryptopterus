@@ -30,11 +30,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Inheritance(strategy=InheritanceType.JOINED)
 public class AppStringProperty extends AppProperty implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
+    
+
 
     public AppStringProperty() {
         super();
     }
+    
+       
 
     @Override
     public int hashCode() {
@@ -60,5 +64,7 @@ public class AppStringProperty extends AppProperty implements Serializable {
     public String toString() {
         return "com.booleanworks.kryptopterus.entities.AppStringProperty[ id=" + id + " ]";
     }
+    
+    
 
 }

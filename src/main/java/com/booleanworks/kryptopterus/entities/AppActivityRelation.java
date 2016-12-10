@@ -15,14 +15,18 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
+import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.io.Serializable;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -30,22 +34,22 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @XmlRootElement
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class AppActivityRelation extends AppObject implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppActivityRelation() {
         super();
     }
 
     @XmlElement
-    @ManyToOne(targetEntity = AppActivity.class)
+    @ManyToOne(targetEntity = AppActivity.class, cascade = {CascadeType.ALL})
     @JsonBackReference("relationsAsFirstActivity")
     protected AppActivity firstActivity;
 
     @XmlElement
-    @ManyToOne(targetEntity = AppActivity.class)
+    @ManyToOne(targetEntity = AppActivity.class, cascade = {CascadeType.ALL})
     @JsonBackReference("relationsAsSecondActivity")
     protected AppActivity secondActivity;
 
@@ -100,6 +104,84 @@ public class AppActivityRelation extends AppObject implements Serializable {
 
     public void setRelationType(AppActivityRelationType relationType) {
         this.relationType = relationType;
+    }
+
+    public void link(AppActivity first, AppActivity second) {
+        Session session = MainHibernateUtil.getInstance().getNewSession();
+
+        this.link(first, second, session);
+    }
+
+    public void link(AppActivity first, AppActivity second, Session session) {
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
+        Transaction t = mhu.beginTransaction(session);
+
+        firstActivityProcess:
+        {
+
+            if (first != this.getFirstActivity()) {
+
+                if (this.getFirstActivity() != null) {
+                    if (this.getFirstActivity().getRelationsAsFirstActivity().contains(this)) {
+                        this.getFirstActivity().getRelationsAsFirstActivity().remove(this);
+                        this.setFirstActivity(null);
+
+                        mhu.saveOrUpdate(this, session);
+                        mhu.saveOrUpdate(this.getFirstActivity(), session);
+
+                    }
+                }
+
+                if (first != null) {
+                    mhu.saveOrUpdate(first);
+
+                    if (!first.getRelationsAsFirstActivity().contains(this)) {
+                        first.getRelationsAsFirstActivity().add(this);
+                        this.setFirstActivity(first);
+
+                        mhu.saveOrUpdate(this, session);
+                        mhu.saveOrUpdate(first);
+                    }
+                }
+            }
+
+        }
+
+        
+
+        secondActivityProcess:
+        {
+
+            if (second != this.getSecondActivity()) {
+
+                if (this.getSecondActivity() != null) {
+                    if (this.getSecondActivity().getRelationsAsSecondActivity().contains(this)) {
+                        this.getSecondActivity().getRelationsAsSecondActivity().remove(this);
+                        this.setSecondActivity(null);
+
+                        mhu.saveOrUpdate(this, session);
+                        mhu.saveOrUpdate(this.getSecondActivity(), session);
+
+                    }
+                }
+
+                if (second != null) {
+                    mhu.saveOrUpdate(second);
+
+                    if (!second.getRelationsAsSecondActivity().contains(this)) {
+                        second.getRelationsAsSecondActivity().add(this);
+                        this.setSecondActivity(second);
+
+                        mhu.saveOrUpdate(this, session);
+                        mhu.saveOrUpdate(second);
+                    }
+                }
+            }
+
+        }
+        
+        
+        mhu.commitTransaction(t);
     }
 
 }

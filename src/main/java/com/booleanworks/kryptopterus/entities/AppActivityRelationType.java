@@ -35,14 +35,14 @@ import org.hibernate.Session;
 @Inheritance(strategy=InheritanceType.JOINED)
 public class AppActivityRelationType extends AppObject implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppActivityRelationType() {
         super();
     }
 
     @XmlElement
-    private String shortIdentifier;
+    protected String shortIdentifier;
 
     @Override
     public int hashCode() {
@@ -93,7 +93,7 @@ public class AppActivityRelationType extends AppObject implements Serializable {
                 newAppActivityRelationType.setShortIdentifier(shortIdentifier);
                 newAppActivityRelationType.setDisplayName(displayName);
 
-                mhu.SimpleSaveOrUpdate(newAppActivityRelationType, session);
+                mhu.saveOrUpdate(newAppActivityRelationType, session);
                 return newAppActivityRelationType;
 
             } else {

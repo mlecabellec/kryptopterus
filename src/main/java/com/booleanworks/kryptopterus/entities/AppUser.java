@@ -39,7 +39,7 @@ public class AppUser extends AppPerson implements Serializable {
 
     static public final int hashAndSaltSize = 32;
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppUser() {
         super();
@@ -348,13 +348,13 @@ public class AppUser extends AppPerson implements Serializable {
         this.memberships = memberships;
     }
 
-    public static AppUser QuickCreateNewAppUser(String username, String secret, String email) {
+    public static AppUser QuickCreateNewAppUser(String username, String secret, String email, Session session) {
 
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
 
         main:
         {
-            Session session = mhu.getNewSession();
+ 
 
             List<Object> appUsers = mhu.executeQuery(session, "SELECT u FROM AppUser u WHERE u.username = :username", new Object[][]{{"username", username}}, 0, 1);
 
@@ -371,7 +371,8 @@ public class AppUser extends AppPerson implements Serializable {
                     Logger.getLogger(WebAppBootstrapper.class.getName()).log(Level.SEVERE, null, ex);
                     return null;
                 }
-                mhu.SimpleSaveOrUpdate(newUser, session);
+                mhu.saveOrUpdate(newUser, session);
+
                 return newUser;
 
             } else {

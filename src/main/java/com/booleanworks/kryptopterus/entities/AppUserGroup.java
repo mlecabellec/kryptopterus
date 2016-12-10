@@ -38,7 +38,7 @@ import org.hibernate.Session;
 @Inheritance(strategy=InheritanceType.JOINED)
 public class AppUserGroup extends AppObject implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppUserGroup() {
         super();
@@ -111,7 +111,7 @@ public class AppUserGroup extends AppObject implements Serializable {
 
                 newAppUserGroup.setSecurityLabel(securityLabel);
 
-                mhu.SimpleSaveOrUpdate(newAppUserGroup, session);
+                mhu.saveOrUpdate(newAppUserGroup, session);
                 return newAppUserGroup;
 
             } else {

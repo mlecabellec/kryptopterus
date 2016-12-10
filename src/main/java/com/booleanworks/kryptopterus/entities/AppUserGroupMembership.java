@@ -36,7 +36,7 @@ import org.hibernate.Session;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class AppUserGroupMembership extends AppObject implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppUserGroupMembership() {
         super();
@@ -91,13 +91,13 @@ public class AppUserGroupMembership extends AppObject implements Serializable {
         this.appUser = appUser;
     }
 
-    public static void quickAddMember(AppUserGroup appUserGroup, AppUser appUser) {
+    public static void quickAddMember(AppUserGroup appUserGroup, AppUser appUser, Session session) {
 
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
 
         main:
         {
-            Session session = mhu.getNewSession();
+
 
             List<Object> appUserGroupMemberships = mhu.executeQuery(session,
                     "SELECT m FROM AppUserGroupMembership m WHERE (m.appUserGroup = :appUserGroup) AND (m.appUser = :appUser)",
@@ -110,7 +110,7 @@ public class AppUserGroupMembership extends AppObject implements Serializable {
                 newAppUserGroupMembership.setCreationDate(new Date());
                 newAppUserGroupMembership.setModificationDate(new Date());
 
-                mhu.SimpleSaveOrUpdate(newAppUserGroupMembership, session);
+                mhu.saveOrUpdate(newAppUserGroupMembership, session);
 
             } else {
                 //TODO ?

@@ -15,7 +15,6 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
-
 import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
@@ -23,6 +22,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -40,22 +40,22 @@ import org.hibernate.Session;
  */
 @Entity
 @XmlRootElement
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class AppActivity extends AppObject implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppActivity() {
         super();
     }
 
     @XmlElement
-    @OneToMany(mappedBy = "firstActivity")
+    @OneToMany(mappedBy = "firstActivity", cascade = {CascadeType.ALL})
     @JsonManagedReference("firstActivity")
     protected Set<AppActivityRelation> relationsAsFirstActivity;
 
     @XmlElement
-    @OneToMany(mappedBy = "secondActivity")
+    @OneToMany(mappedBy = "secondActivity", cascade = {CascadeType.ALL})
     @JsonManagedReference("secondActivity")
     protected Set<AppActivityRelation> relationsAsSecondActivity;
 
@@ -108,6 +108,10 @@ public class AppActivity extends AppObject implements Serializable {
     }
 
     public Set<AppActivityRelation> getRelationsAsFirstActivity() {
+        if(this.relationsAsFirstActivity == null)
+        {
+            this.relationsAsFirstActivity = new HashSet<>() ;
+        }      
         return relationsAsFirstActivity;
     }
 
@@ -116,6 +120,10 @@ public class AppActivity extends AppObject implements Serializable {
     }
 
     public Set<AppActivityRelation> getRelationsAsSecondActivity() {
+        if(this.relationsAsSecondActivity == null)
+        {
+            this.relationsAsSecondActivity = new HashSet<>() ;
+        }
         return relationsAsSecondActivity;
     }
 
@@ -180,15 +188,15 @@ public class AppActivity extends AppObject implements Serializable {
         this.businessIdentifier = businessIdentifier.toUpperCase().toUpperCase().replaceAll("[^A-Z0-9_-]", "");
     }
 
-    public static AppActivity findOrCreateWithBusinessIdentifier(String displayName, String businessIdentifier, String statusIdentifier) {
-        
-        MainHibernateUtil mhu = MainHibernateUtil.getInstance() ; 
+    public static AppActivity findOrCreateWithBusinessIdentifier(String displayName, String businessIdentifier, String statusIdentifier, Session session) {
+
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
 
         main:
         {
-            Session session = mhu.getNewSession() ;
+            //Session session = mhu.getNewSession() ;
 
-            List<Object> appActivities = mhu.executeQuery(session, "SELECT a FROM AppActivity a WHERE a.businessIdentifier = :businessIdentifier", new Object[][] {{"businessIdentifier", businessIdentifier}}, 0, 1);
+            List<Object> appActivities = mhu.executeQuery(session, "SELECT a FROM AppActivity a WHERE a.businessIdentifier = :businessIdentifier", new Object[][]{{"businessIdentifier", businessIdentifier}}, 0, 1);
 
             if (appActivities.isEmpty()) {
                 AppActivity newAppActivity = new AppActivity();
@@ -196,17 +204,17 @@ public class AppActivity extends AppObject implements Serializable {
                 newAppActivity.setBusinessIdentifier(businessIdentifier);
                 newAppActivity.setDisplayName(displayName);
 
-                newAppActivity.setStatus(AppActivityStatus.findOrCreate(statusIdentifier, statusIdentifier));
+                newAppActivity.setStatus(AppActivityStatus.findOrCreate(statusIdentifier, statusIdentifier,session));
 
                 newAppActivity.setCreationDate(new Date());
                 newAppActivity.setModificationDate(new Date());
 
-                mhu.SimpleSaveOrUpdate(newAppActivity, session);
+                mhu.saveOrUpdate(newAppActivity, session);
 
                 return newAppActivity;
 
             } else {
-                
+
                 return (AppActivity) appActivities.get(0);
             }
 

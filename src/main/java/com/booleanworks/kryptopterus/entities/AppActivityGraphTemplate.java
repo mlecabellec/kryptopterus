@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppActivityGraphTemplate  extends AppObject implements Serializable, AppObjectTemplate<AppActivityGraph> {
 
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppActivityGraphTemplate() {
         super();

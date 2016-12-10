@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Inheritance(strategy=InheritanceType.JOINED)
 public class AppIntegerProperty extends AppProperty implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppIntegerProperty() {
         super();

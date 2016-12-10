@@ -15,12 +15,17 @@
  */
 package com.booleanworks.kryptopterus.entities;
 
+import com.booleanworks.kryptopterus.application.MainHibernateUtil;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.io.Serializable;
+import java.util.Date;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.Session;
 
 /**
  *
@@ -31,16 +36,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Inheritance(strategy=InheritanceType.JOINED)
 public class AppProperty extends AppObject implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     public AppProperty() {
         super();
     }
+    
+    public AppProperty(String pKey, Serializable pValue) {
+        super();
+        this.setPropertyKey(pKey);
+        this.setValue(value);
+    }    
 
     @ManyToOne
     protected AppPropertyTemplate sourceTemplate;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JsonBackReference("properties")
     protected AppObject parentObject;
 
     protected String propertyKey;
@@ -102,6 +114,23 @@ public class AppProperty extends AppObject implements Serializable {
 
     public void setValue(Serializable value) {
         this.value = value;
+    }
+    
+    @Deprecated
+    public static AppProperty newProperty(AppObject parentObject,String pKey,Serializable pValue ,Session session)
+    {
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
+        
+        AppProperty ap = new AppProperty() ;
+        ap.setValue(pValue);
+        ap.setPropertyKey(pKey);
+        ap.setCreationDate(new Date());
+        ap.setModificationDate(new Date());
+        ap.setDisplayName(pKey);
+        ap.setParentObject(parentObject);
+        
+        mhu.saveOrUpdate(ap,session) ;
+        return ap ; 
     }
 
 }
