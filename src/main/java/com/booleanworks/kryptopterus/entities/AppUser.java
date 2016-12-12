@@ -7,6 +7,7 @@ package com.booleanworks.kryptopterus.entities;
 
 import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import com.booleanworks.kryptopterus.application.WebAppBootstrapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
@@ -24,6 +25,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.hibernate.Session;
@@ -49,10 +51,16 @@ public class AppUser extends AppPerson implements Serializable {
     protected String username;
 
     @XmlElement
+    @JsonIgnore
+    @XmlTransient
     protected String secret1;
     @XmlElement
+    @JsonIgnore
+    @XmlTransient
     protected String secret2;
     @XmlElement
+    @JsonIgnore
+    @XmlTransient
     protected String secret3;
 
     @XmlElement

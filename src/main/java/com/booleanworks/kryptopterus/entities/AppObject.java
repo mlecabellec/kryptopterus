@@ -16,6 +16,7 @@
 package com.booleanworks.kryptopterus.entities;
 
 import com.booleanworks.kryptopterus.application.MainHibernateUtil;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -101,11 +102,13 @@ public class AppObject implements Serializable {
     @XmlElement
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd-HH-mm-ss", timezone="CET")
     protected Date creationDate;
 
     @XmlElement
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd-HH-mm-ss", timezone="CET")
     protected Date modificationDate;
 
     @XmlElement

@@ -16,6 +16,7 @@
 package com.booleanworks.kryptopterus.entities;
 
 import com.booleanworks.kryptopterus.application.MainHibernateUtil;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import java.util.Date;
@@ -61,18 +62,22 @@ public class AppActivity extends AppObject implements Serializable {
 
     @XmlElement
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd-HH-mm-ss", timezone="CET")
     protected Date plannedStart;
 
     @XmlElement
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd-HH-mm-ss", timezone="CET")
     protected Date plannedEnd;
 
     @XmlElement
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd-HH-mm-ss", timezone="CET")
     protected Date realStart;
 
     @XmlElement
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd-HH-mm-ss", timezone="CET")
     protected Date realEnd;
 
     @XmlElement

@@ -188,12 +188,12 @@ this.APP["i18n"] = this.APP["i18n"] || {
             //Every element should be populated with the targetCOntext 'page'
             //context, internalIdentfier , cssSelector, content
         },
-        translatePageElement: function translatePageElement(jqueryElement,targetContext)
+        translatePageElement: function translatePageElement(jqueryElement, targetContext)
         {
             //Translate every texts found using populated data and loaded data to targetContext (aka language)
             //match on cssSelector
         },
-        t:function t(identifier,context){
+        t: function t(identifier, context) {
             //Just returns the content related to an identifier and a context
         }
     },
@@ -247,7 +247,7 @@ APP.home.bootstrap();
 this.APP["activityList"] = this.APP["activityList"] || {
     moduleInfo:
             {
-                moduleId: "APP.activities",
+                moduleId: "APP.activityList",
                 moduleVersion: "0.0.1-DEV",
                 description: "Activity related functions including init routines"
             },
@@ -263,16 +263,124 @@ this.APP["activityList"] = this.APP["activityList"] || {
         },
         displayActivityList: function displayActivityList()
         {
-            $("#jumbotron>h1").text("Let's go...");
-            $("#jumbotron").fadeOut();
-            $("#jumbotron>h1").text("Bienvenue !!");
 
 
+            $("#mainSubContainer").load("res/templates/activityList_v1.html", {}, function displayActivityListStage0() {
 
+                $("#jumbotron>h1").text("Let's go...");
+                $("#jumbotron").fadeOut();
+                $("#jumbotron>h1").text("Bienvenue !!");
+
+                var loginJqxhr = $.ajax({
+                    url: "s/activities/search/ALL",
+                    method: "GET",
+                    cache: false,
+                    data: JSON.stringify({}),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    crossDomain: false,
+                    success: APP.activityList.gui.displayActivityListStage1
+                });
+
+            });
+
+
+        },
+        displayActivityListStage1: function displayActivityListStage1(data)
+        {
+            APP.activityList.data.tableData = data;
+            APP.activityList.data.tableSettings.data = APP.activityList.data.tableData;
+
+            var handsOnTableActivityList0Element = document.querySelector('#handsOnTableActivityList0');
+
+            APP.activityList.data.tableObject = new Handsontable(handsOnTableActivityList0Element, APP.activityList.data.tableSettings);
         }
     },
     toolKit: {},
-    data: {}
+    data: {
+        tableData: "nodata",
+        tableObject: "nodata",
+        tableSettings:
+                {
+                    data: {},
+                    columns: [
+                        {
+                            data: 'id',
+                            type: 'numeric',
+                            width: 40,
+                            readOnly: true
+                        },
+                        {
+                            data: 'displayName',
+                            type: 'text'
+                        },
+                        {
+                            data: 'plannedStart',
+                            type: 'date',
+                            dateFormat: 'YYYY-MM-DD'
+                        },
+                        {
+                            data: 'plannedEnd',
+                            type: 'date',
+                            dateFormat: 'YYYY-MM-DD'
+                        },
+                        {
+                            data: 'realStart',
+                            type: 'date',
+                            dateFormat: 'YYYY-MM-DD'
+                        },
+                        {
+                            data: 'realEnd',
+                            type: 'date',
+                            dateFormat: 'YYYY-MM-DD'
+                        },
+                        {
+                            data: 'version',
+                            type: 'numeric',
+                            width: 40,
+                            readOnly: true
+                        },
+                        {
+                            data: 'creationDate',
+                            type: 'date',
+                            dateFormat: 'YYYY-MM-DD'
+                        },
+                        {
+                            data: 'modificationDate',
+                            type: 'date',
+                            dateFormat: 'YYYY-MM-DD'
+                        }
+
+                    ],
+                    stretchH: 'all',
+                    width: 1000,
+                    autoWrapRow: true,
+                    height: 441,
+                    maxRows: 22,
+                    rowHeaders: true,
+                    colHeaders: [
+                        'id',
+                        'displayName',
+                        'plannedStart',
+                        'plannedEnd',
+                        'realStart',
+                        'realEnd',
+                        'version',
+                        'creationDate',
+                        'modificationDate'
+                    ],
+                    columnSorting: true,
+                    sortIndicator: true,
+                    autoColumnSize: {
+                        samplingRatio: 23
+                    },
+                    manualRowResize: true,
+                    manualColumnResize: true,
+                    manualRowMove: true,
+                    manualColumnMove: true,
+                    contextMenu: true
+                }
+    }
 };
 APP.activityList.bootstrap();
 
