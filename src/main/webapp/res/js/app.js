@@ -265,25 +265,31 @@ this.APP["activityList"] = this.APP["activityList"] || {
         {
 
 
-            $("#mainSubContainer").load("res/templates/activityList_v1.html", {}, function displayActivityListStage0() {
+            $("#mainSubContainer").load("res/templates/activityList_v1.html", {}, APP.activityList.gui.displayActivityListStage0);
 
-                $("#jumbotron>h1").text("Let's go...");
-                $("#jumbotron").fadeOut();
-                $("#jumbotron>h1").text("Bienvenue !!");
 
-                var loginJqxhr = $.ajax({
-                    url: "s/activities/search/ALL",
-                    method: "GET",
-                    cache: false,
-                    data: JSON.stringify({}),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    crossDomain: false,
-                    success: APP.activityList.gui.displayActivityListStage1
-                });
 
+
+        }, displayActivityListStage0: function displayActivityListStage0()
+        {
+
+            $("#activityListSearchGoButton").unbind("click");
+            $("#activityListSearchGoButton").on("click", APP.activityList.gui.activityListNewSearch);
+
+            $("#jumbotron>h1").text("Let's go...");
+            $("#jumbotron").fadeOut();
+            $("#jumbotron>h1").text("Bienvenue !!");
+
+            var loginJqxhr = $.ajax({
+                url: "s/activities/search",
+                method: "POST",
+                cache: false,
+                data: JSON.stringify({"searchExpression": "ALL", "offset":0,"maxResults":50}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: false,
+                success: APP.activityList.gui.displayActivityListStage1
             });
-
 
         },
         displayActivityListStage1: function displayActivityListStage1(data)
@@ -291,9 +297,40 @@ this.APP["activityList"] = this.APP["activityList"] || {
             APP.activityList.data.tableData = data;
             APP.activityList.data.tableSettings.data = APP.activityList.data.tableData;
 
-            var handsOnTableActivityList0Element = document.querySelector('#handsOnTableActivityList0');
+            var handsOnTableActivityList0Element = document.querySelector("#handsOnTableActivityList0");
 
             APP.activityList.data.tableObject = new Handsontable(handsOnTableActivityList0Element, APP.activityList.data.tableSettings);
+            
+            APP.activityList.gui.fitActivityListTableToContainer() ;
+            
+            $("#activityListContainer0").unbind("resize");
+            $("#activityListContainer0").on("resize", APP.activityList.gui.fitActivityListTableToContainer); 
+            
+            $(window).on("resize", APP.activityList.gui.fitActivityListTableToContainer);             
+            
+        },
+        fitActivityListTableToContainer: function fitActivityListTableToContainer()
+        {
+            var newWidth = $("#activityListContainer0").innerWidth() -30;
+            var newHeight = $("#activityListContainer0").innerHeight() - 30 ;
+            
+            APP.activityList.data.tableObject.updateSettings({
+                width: newWidth ,
+                height: newHeight
+            });
+        },
+        activityListNewSearch: function activityListNewSearch()
+        {
+            var loginJqxhr = $.ajax({
+                url: "s/activities/search",
+                method: "POST",
+                cache: false,
+                data: JSON.stringify({"searchExpression": $("#activityListSearchField").val(), "offset":0,"maxResults":50}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: false,
+                success: APP.activityList.gui.displayActivityListStage1
+            });
         }
     },
     toolKit: {},
@@ -343,12 +380,14 @@ this.APP["activityList"] = this.APP["activityList"] || {
                         {
                             data: 'creationDate',
                             type: 'date',
-                            dateFormat: 'YYYY-MM-DD'
+                            dateFormat: 'YYYY-MM-DD',
+                            readOnly: true
                         },
                         {
                             data: 'modificationDate',
                             type: 'date',
-                            dateFormat: 'YYYY-MM-DD'
+                            dateFormat: 'YYYY-MM-DD',
+                            readOnly: true
                         }
 
                     ],

@@ -6,7 +6,7 @@
     <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/test001?zeroDateTimeBehavior=convertToNull</property>
     <property name="hibernate.connection.username">test001</property>
     <property name="hibernate.connection.password">test001</property>
-    <property name="hibernate.connection.pool_size">5</property>
+    <property name="hibernate.connection.pool_size">100</property>
     <property name="hibernate.current_session_context_class">managed</property>
     <property name="hibernate.hbm2ddl.auto">update</property>
     <property name="hibernate.hbm2ddl.delimiter">;</property>

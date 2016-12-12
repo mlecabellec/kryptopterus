@@ -17,6 +17,7 @@ package com.booleanworks.kryptopterus.services;
 
 import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import com.booleanworks.kryptopterus.entities.AppActivity;
+import com.booleanworks.kryptopterus.services.transients.SearchRequest;
 import com.booleanworks.kryptopterus.utilities.SearchExpressionParser;
 import java.security.Principal;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -54,13 +56,13 @@ public class ActivityListService {
     
     
     @GET
-    @Path("search/{searchString}")
+    @Path("searchurl/{searchString}")
     @Produces(MediaType.APPLICATION_JSON)
     //@Consumes(MediaType.APPLICATION_JSON)    
     public Set<AppActivity> simpleActivitySearch(@PathParam("searchString") String searchString)
     {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Session session = mhu.getNewSession() ;
+        Session session = mhu.getResidentSession() ;
         CriteriaBuilder criteriaBuilder =  session.getCriteriaBuilder() ;
         //CriteriaQuery<AppActivity> criteriaQuery = criteriaBuilder.createQuery(AppActivity.class) ;
         HashSet<AppActivity> result = new HashSet<>() ;
@@ -79,4 +81,35 @@ public class ActivityListService {
         return result ;
     }
 
+    
+    @POST
+    @Path("search")
+    @Produces(MediaType.APPLICATION_JSON)
+    //@Consumes(MediaType.APPLICATION_JSON)    
+    public Set<AppActivity> simpleActivitySearch(SearchRequest searchRequest)
+    {
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
+        Session session = mhu.getResidentSession();
+        CriteriaBuilder criteriaBuilder =  session.getCriteriaBuilder() ;
+        //CriteriaQuery<AppActivity> criteriaQuery = criteriaBuilder.createQuery(AppActivity.class) ;
+        HashSet<AppActivity> result = new HashSet<>() ;
+        
+        Principal userPrincipal = request.getUserPrincipal() ;
+        
+        searchRequest.searchExpression  = searchRequest.searchExpression  == null ? "" : searchRequest.searchExpression ;
+        searchRequest.searchExpression  = searchRequest.searchExpression .trim() ;
+        
+        searchRequest.offset = searchRequest.offset >= 0 ? searchRequest.offset : 0 ;
+        searchRequest.maxResults = searchRequest.maxResults > 0 ? searchRequest.maxResults : 1 ;
+        searchRequest.maxResults = searchRequest.maxResults < 200 ? searchRequest.maxResults : 200 ;
+
+        CriteriaQuery<AppActivity> cq1 = SearchExpressionParser.buildSelectCriteriaQueryFromExpression(searchRequest.searchExpression , session, AppActivity.class) ;
+        Query q1 =  session.createQuery(cq1) ;
+        q1.setMaxResults(searchRequest.maxResults);
+        q1.setFirstResult(searchRequest.offset);
+        result.addAll(q1.getResultList());
+        
+        return result ;
+    }    
+    
 }

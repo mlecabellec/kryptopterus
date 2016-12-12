@@ -125,7 +125,7 @@ public class WebAppBootstrapper implements ServletContextListener {
             this.setupMandatoryData();
         }
 
-        for (int ct1 = 0; ct1 < 500; ct1++) {
+        for (int ct1 = 0; ct1 < 30; ct1++) {
 
 
             Transaction transaction = mhu.beginTransaction(session);
@@ -159,7 +159,7 @@ public class WebAppBootstrapper implements ServletContextListener {
 
         Random random = new Random();
 
-        for (int ct2 = 0; ct2 < 300; ct2++) {
+        for (int ct2 = 0; ct2 < 50; ct2++) {
 
             Transaction transaction = mhu.beginTransaction(session);
 
