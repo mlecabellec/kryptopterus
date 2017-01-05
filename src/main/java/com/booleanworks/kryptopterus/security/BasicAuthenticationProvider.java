@@ -70,16 +70,17 @@ public class BasicAuthenticationProvider implements AuthenticationProvider{
                         }
                         
                         //TODO IMPLEMEN A TRUE PROVIDER !!!!
-                        
+                        mhu.closeSession(session);
                         return  new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), roles  );
                     }else
                     {
-                        
+                        mhu.closeSession(session);
                         throw new BadCredentialsException("Bad credentials ("+this.getClass().getCanonicalName()+")") ;
                     }
 
                 } catch (UnsupportedEncodingException ex) {
                     Logger.getLogger(WebAppBootstrapper.class.getName()).log(Level.SEVERE, null, ex);
+                    mhu.closeSession(session);
                     throw new AuthenticationServiceException("Error while processing the request in "+ this.getClass().getCanonicalName(),ex);
 
                 }
@@ -87,6 +88,7 @@ public class BasicAuthenticationProvider implements AuthenticationProvider{
 
             }else
             {    
+                mhu.closeSession(session);
                 throw new UsernameNotFoundException("User not found byt " + this.getClass().getCanonicalName());
             }
             

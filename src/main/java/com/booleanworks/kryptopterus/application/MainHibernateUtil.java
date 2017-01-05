@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.FlushModeType;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -52,6 +53,7 @@ public class MainHibernateUtil {
     protected MainHibernateUtil() {
         this.serviceRegistryBuilder = new StandardServiceRegistryBuilder();
         this.serviceRegistryBuilder.configure("hibernate.cfg.xml");
+
         this.registry = this.serviceRegistryBuilder.build();
 
         this.metadataSources = new MetadataSources(registry);
@@ -70,14 +72,18 @@ public class MainHibernateUtil {
     }
 
     public Session getNewSession() {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.getNewSession()");
 
         Session session;
         session = this.sessionFactory.openSession();
+        session.setFlushMode(FlushModeType.AUTO);
 
+        System.out.println("return session; => " + session.hashCode());
         return session;
     }
 
     public Session getCurrentSession() {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.getCurrentSession()");
 
         Session session = null;
 
@@ -95,54 +101,125 @@ public class MainHibernateUtil {
             this.residentSession = session;
         }
 
+        System.out.println("return session; => " + session.hashCode());
         return session;
     }
 
     public synchronized Session getResidentSession() {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.getResidentSession()");
         if (this.residentSession == null || !this.residentSession.isConnected() || !this.residentSession.isOpen()) {
-            this.residentSession = this.getCurrentSession();
+            this.residentSession = this.getNewSession();
         }
 
+        System.out.println("return this.residentSession; => " + this.residentSession.hashCode());
+        return this.residentSession;
+    }
+
+    public synchronized Session getResidentSessionOrNew() {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.getResidentSessionOrNew()");
+        if (this.residentSession == null
+                || !this.residentSession.isConnected()
+                || !this.residentSession.isOpen()
+                || this.residentSession.isJoinedToTransaction()
+                || this.residentSession.getTransaction().getRollbackOnly()) {
+            this.residentSession = this.getNewSession();
+        }
+
+        System.out.println("return this.residentSession; => " + this.residentSession.hashCode());
         return this.residentSession;
     }
 
     public void closeSession(Session session) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.closeSession()");
+        System.out.println("session  => " + session.hashCode());
         session.close();
     }
 
-    public Transaction beginTransaction() {
-
-        Session session = this.getResidentSession();
-
-        Transaction transaction = session.beginTransaction();
-
-        return transaction;
-    }
-
     public Transaction beginTransaction(Session session) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.beginTransaction()");
 
         if (session == null || !session.isConnected() || !session.isOpen()) {
-            session = this.getResidentSession();
+            session = this.getNewSession();
         }
 
         if (session.isJoinedToTransaction()) {
+
+            System.out.println("session.getTransaction();" + session.getTransaction().hashCode());
             return session.getTransaction();
         } else {
             Transaction transaction = session.beginTransaction();
+
+            System.out.println("session  => " + session.hashCode());
+            System.out.println("transaction  => " + transaction.hashCode());
+
             return transaction;
         }
 
     }
 
-    public void commitTransaction(Transaction transaction) {
+    public Transaction beginTransaction(Session session, boolean endActiveOne) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.beginTransaction()");
+        System.out.println("session  => " + session.hashCode());
 
-        if (transaction.isActive()) {
-            transaction.commit();
+        if (session == null || !session.isConnected() || !session.isOpen()) {
+            session = this.getNewSession();
+        }
+
+        if (session.isJoinedToTransaction()) {
+            if (endActiveOne) {
+                if (session.getTransaction().getRollbackOnly()) {
+                    this.rollbackTransaction(session, session.getTransaction());
+                    Transaction transaction = session.beginTransaction();
+
+                    System.out.println("session  => " + session.hashCode());
+                    System.out.println("return transaction;  => " + transaction.hashCode());
+
+                    return transaction;
+                } else {
+                    this.commitTransaction(session, session.getTransaction());
+                    Transaction transaction = session.beginTransaction();
+
+                    System.out.println("session  => " + session.hashCode());
+                    System.out.println("return transaction;  => " + transaction.hashCode());
+
+                    return transaction;
+                }
+
+            } else {
+
+                System.out.println("session  => " + session.hashCode());
+                System.out.println("session.getTransaction();  => " + session.getTransaction().hashCode());
+                return session.getTransaction();
+            }
+
+        } else {
+            Transaction transaction = session.beginTransaction();
+
+            System.out.println("session  => " + session.hashCode());
+            System.out.println("return transaction;  => " + transaction.hashCode());
+
+            return transaction;
         }
 
     }
 
-    public void rollbackTransaction(Transaction transaction) {
+    public void commitTransaction(Session session, Transaction transaction) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.commitTransaction()");
+        System.out.println("transaction  => " + transaction.hashCode());
+
+        if (transaction.isActive() && !transaction.getRollbackOnly()) {
+            transaction.commit();
+        }
+
+        if (transaction.isActive() && transaction.getRollbackOnly()) {
+            this.rollbackTransaction(session, transaction);
+        }
+
+    }
+
+    public void rollbackTransaction(Session session, Transaction transaction) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.rollbackTransaction()");
+        System.out.println("transaction  => " + transaction.hashCode());
 
         if (transaction.isActive()) {
             transaction.rollback();
@@ -150,11 +227,15 @@ public class MainHibernateUtil {
 
     }
 
+    @Deprecated
     public Object saveOrUpdate(Object object) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.saveOrUpdate()");
         return this.saveOrUpdate(object, this.getResidentSession());
     }
 
     public Object saveOrUpdate(Object object, Session session) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.saveOrUpdate()");
+        System.out.println("session  => " + session.hashCode());
 
         Object result = null;
 
@@ -165,31 +246,35 @@ public class MainHibernateUtil {
         if (session.isJoinedToTransaction()) {
 
             session.saveOrUpdate(object);
-            if ( !(session.getTransaction().getStatus() == TransactionStatus.MARKED_ROLLBACK)) {
+            if (!(session.getTransaction().getStatus() == TransactionStatus.MARKED_ROLLBACK)) {
                 session.flush();
             }
             result = session.get(object.getClass(), session.getIdentifier(object));
 
         } else {
-            Transaction transaction = this.beginTransaction(session);
+            Transaction transaction = this.beginTransaction(session, false);
 
             session.saveOrUpdate(object);
-            if (!(transaction.getStatus() == TransactionStatus.MARKED_ROLLBACK)) {
+            if (!transaction.getRollbackOnly() && session.getFlushMode() != FlushModeType.AUTO) {
                 session.flush();
             }
             result = session.get(object.getClass(), session.getIdentifier(object));
 
-            this.commitTransaction(transaction);
+            this.commitTransaction(session, transaction);
         }
 
         return result;
     }
 
+    @Deprecated
     public Object delete(Object object) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.delete()");
         return this.delete(object, this.getNewSession());
     }
 
     public Object delete(Object object, Session session) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.delete()");
+        System.out.println("session  => " + session.hashCode());
 
         Object result = null;
 
@@ -200,25 +285,31 @@ public class MainHibernateUtil {
         if (session.isJoinedToTransaction()) {
 
             session.delete(object);
-            session.flush();
+            if (!(session.getTransaction().getStatus() == TransactionStatus.MARKED_ROLLBACK)) {
+                session.flush();
+            }
             //session.detach(object) ;
             result = object;
 
         } else {
-            Transaction transaction = this.beginTransaction(session);
+            Transaction transaction = this.beginTransaction(session, false);
 
             session.delete(object);
+
             session.flush();
+
             //session.detach(object) ;
             result = object;
 
-            this.commitTransaction(transaction);
+            this.commitTransaction(session, transaction);
         }
 
         return result;
     }
 
     public List<Object> executeQuery(Session session, String query, Object[][] parameters, int offset, int maxResults) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.executeQuery()");
+        System.out.println("session  => " + session.hashCode());
 
         if (session == null || !session.isConnected() || !session.isOpen()) {
             session = this.getResidentSession();
@@ -236,6 +327,8 @@ public class MainHibernateUtil {
     }
 
     public List<Object> executeQuery(Session session, String query, Map<String, Object> parameters, int offset, int maxResults) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.executeQuery()");
+        System.out.println("session  => " + session.hashCode());
 
         if (session == null || !session.isConnected() || !session.isOpen()) {
             session = this.getResidentSession();
@@ -255,6 +348,9 @@ public class MainHibernateUtil {
     }
 
     public Object findOrNull(Session session, String query, Object[][] parameters) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.findOrNull()");
+        System.out.println("session  => " + session.hashCode());
+
         HashMap<String, Object> paramMap = new HashMap<>();
 
         for (Object[] objectPair : parameters) {
@@ -266,6 +362,8 @@ public class MainHibernateUtil {
     }
 
     public Object findOrNull(Session session, String query, Map<String, Object> parameters) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.findOrNull()");
+        System.out.println("session  => " + session.hashCode());
         List<Object> result = new ArrayList<Object>();
 
         Query q1 = session.createQuery(query);

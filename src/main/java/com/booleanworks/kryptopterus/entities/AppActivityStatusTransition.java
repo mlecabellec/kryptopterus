@@ -119,7 +119,7 @@ public class AppActivityStatusTransition extends AppObject implements Serializab
 
             AppActivityStatus fromStatusObject = AppActivityStatus.findOrCreate(fromStatus, fromStatus, session);
             AppActivityStatus toStatusObject = AppActivityStatus.findOrCreate(toStatus, toStatus, session);
-            AppUserGroup allowedGroupObject = AppUserGroup.findOrCreateAppUserGroup(allowedGroup);
+            AppUserGroup allowedGroupObject = AppUserGroup.findOrCreateAppUserGroup(allowedGroup, session);
 
             List<Object> appActivityStatusTransitions = mhu.executeQuery(session,
                     "SELECT a FROM AppActivityStatusTransition a WHERE (a.fromStatus = :fromStatus) AND (a.toStatus = :toStatus) AND (a.allowedGroup = :allowedGroup)",

@@ -137,7 +137,7 @@ public class MainHibernateUtilTest {
         assertEquals(aa1.getRelationsAsFirstActivity().size(), 1);       
         
         
-        mhu.commitTransaction(t1);
+        mhu.commitTransaction(s1,t1);
         Transaction t2 = mhu.beginTransaction(s1) ;
         
         aa1 =  (AppActivity) mhu.saveOrUpdate(aa1, s1);  
@@ -148,7 +148,7 @@ public class MainHibernateUtilTest {
         assertEquals(aa1.getRelationsAsFirstActivity().size(), 1);         
         
         
-        mhu.commitTransaction(t2);
+        mhu.commitTransaction(s1,t2);
         mhu.closeSession(s1);
         
         aa1 = null ;
@@ -162,7 +162,7 @@ public class MainHibernateUtilTest {
         assertNotNull(aa2.getRelationsAsFirstActivity());
         assertEquals(aa2.getRelationsAsFirstActivity().size(), 1);          
         
-        mhu.commitTransaction(t3);
+        mhu.commitTransaction(s3,t3);
         //assertFalse(s1.isJoinedToTransaction());
         //assertFalse(s1.isReadOnly(aa1));
         

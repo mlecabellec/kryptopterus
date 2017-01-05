@@ -77,13 +77,13 @@ public class AppActivityRelationType extends AppObject implements Serializable {
         this.shortIdentifier = shortIdentifier;
     }
 
-    public static AppActivityRelationType findOrCreate(String displayName, String shortIdentifier) {
+    public static AppActivityRelationType findOrCreate(String displayName, String shortIdentifier,Session session) {
         
         MainHibernateUtil mhu = MainHibernateUtil.getInstance() ; 
 
         main:
         {
-            Session session = mhu.getNewSession() ;
+
 
             List<Object> appActivityRelationTypes = mhu.executeQuery(session, "SELECT a FROM AppActivityRelationType a WHERE a.shortIdentifier = :shortIdentifier", new Object[][] {{"shortIdentifier", shortIdentifier}}, 0, 1);
 

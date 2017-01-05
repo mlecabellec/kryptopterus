@@ -392,11 +392,11 @@ public class AppUser extends AppPerson implements Serializable {
 
     }
 
-    public static AppUser findUserOrNull(String username) {
+    public static AppUser findUserOrNull(String username, Session session) {
 
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
 
-        return (AppUser) mhu.findOrNull(mhu.getNewSession(), "SELECT u FROM AppUser u WHERE u.username = :username", new Object[][]{{"username", username}});
+        return (AppUser) mhu.findOrNull(session, "SELECT u FROM AppUser u WHERE u.username = :username", new Object[][]{{"username", username}});
 
     }
 
@@ -412,8 +412,8 @@ public class AppUser extends AppPerson implements Serializable {
 
     }
 
-    public static boolean isMemberOf(String username, String groupSecurityLabel) {
-        AppUser foundUser = AppUser.findUserOrNull(username);
+    public static boolean isMemberOf(String username, String groupSecurityLabel, Session session) {
+        AppUser foundUser = AppUser.findUserOrNull(username,  session);
 
         if (foundUser == null) {
             return false;

@@ -203,14 +203,14 @@ public class SearchExpressionParser extends BaseParser<Object> {
 
         Class cClass = targetClass;
         while (cClass != Object.class) {
-            System.out.println(" - cClass.getCanonicalName()=" + cClass.getCanonicalName());
+            //System.out.println(" - cClass.getCanonicalName()=" + cClass.getCanonicalName());
             for (Field cField : cClass.getDeclaredFields()) {
-                System.out.println("    - cField.getName()=" + cField.getName());
+                //System.out.println("    - cField.getName()=" + cField.getName());
                 knownFields.add(cField);
             }
             cClass = cClass.getSuperclass();
         }
-        
+
         System.out.println("knownFields.size()=" + knownFields.size());
         System.out.println("knownFields=" + knownFields);
 
@@ -225,6 +225,18 @@ public class SearchExpressionParser extends BaseParser<Object> {
                 }
 
             }
+
+            if (parboiledNode.getChildren().size() == 2) {
+                Node afterFirstCriterion = (Node) parboiledNode.getChildren().get(1);
+                for (Object seqNodeObject : afterFirstCriterion.getChildren()) {
+                    Node seqOfCriteria = (Node) seqNodeObject;
+                    Node suppCriterion = (Node) seqOfCriteria.getChildren().get(1);
+                    builtPredicatesFromCriteria.add((Predicate) SearchExpressionParser.nodeToExpression(suppCriterion, s, q, cb, expr, targetClass));
+                }
+
+            }
+
+            System.out.println("builtPredicatesFromCriteria.size()=" + builtPredicatesFromCriteria.size());
 
             if (builtPredicatesFromCriteria.size() == 0) {
                 return cb.isTrue(cb.literal(Boolean.TRUE));
@@ -331,9 +343,9 @@ public class SearchExpressionParser extends BaseParser<Object> {
         } else if (parboiledNode.getLabel().equals("numberLiteral")) {
 
             if (matchedSubString.contains(".")) {
-                return cb.literal(Double.parseDouble(matchedSubString));
+                return cb.literal(Double.parseDouble(matchedSubString.trim()));
             } else {
-                return cb.literal(Integer.parseInt(matchedSubString));
+                return cb.literal(Integer.parseInt(matchedSubString.trim()));
             }
 
         } else if (parboiledNode.getLabel().equals("stringLiteral")) {

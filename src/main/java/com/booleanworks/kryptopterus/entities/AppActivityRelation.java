@@ -106,6 +106,7 @@ public class AppActivityRelation extends AppObject implements Serializable {
         this.relationType = relationType;
     }
 
+    @Deprecated
     public void link(AppActivity first, AppActivity second) {
         Session session = MainHibernateUtil.getInstance().getNewSession();
 
@@ -114,7 +115,12 @@ public class AppActivityRelation extends AppObject implements Serializable {
 
     public void link(AppActivity first, AppActivity second, Session session) {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Transaction t = mhu.beginTransaction(session);
+        Transaction t = mhu.beginTransaction(session, false);
+        
+        if(first.getId() == second.getId())
+        {
+            return ;
+        }
 
         firstActivityProcess:
         {
@@ -122,32 +128,34 @@ public class AppActivityRelation extends AppObject implements Serializable {
             if (first != this.getFirstActivity()) {
 
                 if (this.getFirstActivity() != null) {
-                    if (this.getFirstActivity().getRelationsAsFirstActivity().contains(this)) {
-                        this.getFirstActivity().getRelationsAsFirstActivity().remove(this);
-                        this.setFirstActivity(null);
 
-                        mhu.saveOrUpdate(this, session);
+                    if (this.getFirstActivity().getRelationsAsFirstActivity().contains(this)) {
+
+                        this.getFirstActivity().getRelationsAsFirstActivity().remove(this);
                         mhu.saveOrUpdate(this.getFirstActivity(), session);
 
                     }
+
+                    this.setFirstActivity(null);
+                    mhu.saveOrUpdate(this, session);
+
                 }
 
                 if (first != null) {
-                    mhu.saveOrUpdate(first);
+
+                    this.setFirstActivity(first);
+                    mhu.saveOrUpdate(this, session);
 
                     if (!first.getRelationsAsFirstActivity().contains(this)) {
-                        first.getRelationsAsFirstActivity().add(this);
-                        this.setFirstActivity(first);
 
-                        mhu.saveOrUpdate(this, session);
-                        mhu.saveOrUpdate(first);
+                        first.getRelationsAsFirstActivity().add(this);
+                        mhu.saveOrUpdate(first, session);
                     }
+
                 }
             }
 
         }
-
-        
 
         secondActivityProcess:
         {
@@ -156,32 +164,34 @@ public class AppActivityRelation extends AppObject implements Serializable {
 
                 if (this.getSecondActivity() != null) {
                     if (this.getSecondActivity().getRelationsAsSecondActivity().contains(this)) {
-                        this.getSecondActivity().getRelationsAsSecondActivity().remove(this);
-                        this.setSecondActivity(null);
 
-                        mhu.saveOrUpdate(this, session);
+                        this.getSecondActivity().getRelationsAsSecondActivity().remove(this);
                         mhu.saveOrUpdate(this.getSecondActivity(), session);
 
                     }
+
+                    this.setSecondActivity(null);
+                    mhu.saveOrUpdate(this, session);
+
                 }
 
                 if (second != null) {
-                    mhu.saveOrUpdate(second);
+
+                    this.setSecondActivity(second);
+                    mhu.saveOrUpdate(this, session);
 
                     if (!second.getRelationsAsSecondActivity().contains(this)) {
-                        second.getRelationsAsSecondActivity().add(this);
-                        this.setSecondActivity(second);
 
-                        mhu.saveOrUpdate(this, session);
-                        mhu.saveOrUpdate(second);
+                        second.getRelationsAsSecondActivity().add(this);
+                        mhu.saveOrUpdate(second, session);
+
                     }
                 }
             }
 
         }
-        
-        
-        mhu.commitTransaction(t);
+
+        mhu.commitTransaction(session, t);
     }
 
 }

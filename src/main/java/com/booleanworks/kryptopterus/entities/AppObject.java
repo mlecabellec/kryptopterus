@@ -167,6 +167,7 @@ public class AppObject implements Serializable {
         return properties;
     }
 
+    @Deprecated
     public void addProperty(AppProperty appProperty) {
         Session session = MainHibernateUtil.getInstance().getNewSession() ;
         this.addProperty(appProperty, session);
@@ -175,7 +176,7 @@ public class AppObject implements Serializable {
     public void addProperty(AppProperty appProperty, Session session) {
 
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Transaction t = mhu.beginTransaction(session);
+        Transaction t = mhu.beginTransaction(session,false);
 
         if (appProperty.getParentObject() == null) {
             appProperty.setParentObject(this);
@@ -188,17 +189,18 @@ public class AppObject implements Serializable {
         mhu.saveOrUpdate(appProperty, session);
         mhu.saveOrUpdate(this, session);
 
-        mhu.commitTransaction(t);
+        mhu.commitTransaction(session,t);
 
     }
 
+    @Deprecated
     public void removeProperty(AppProperty appProperty) {
         this.removeProperty(appProperty, MainHibernateUtil.getInstance().getNewSession());
     }
 
     public void removeProperty(AppProperty appProperty, Session session) {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Transaction t = mhu.beginTransaction(session);
+        Transaction t = mhu.beginTransaction(session,false);
 
         if (appProperty.getParentObject().equals(this)) {
             appProperty.setParentObject(null);
@@ -211,7 +213,7 @@ public class AppObject implements Serializable {
         mhu.delete(appProperty, session);
         mhu.saveOrUpdate(this, session);
 
-        mhu.commitTransaction(t);
+        mhu.commitTransaction(session,t);
     }
 
     public void setProperties(Set<AppProperty> properties) {

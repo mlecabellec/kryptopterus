@@ -95,13 +95,13 @@ public class AppUserGroup extends AppObject implements Serializable {
         this.memberships = memberships;
     }
 
-    public static AppUserGroup findOrCreateAppUserGroup(String securityLabel) {
+    public static AppUserGroup findOrCreateAppUserGroup(String securityLabel, Session session) {
         
         MainHibernateUtil mhu = MainHibernateUtil.getInstance() ; 
 
         main:
         {
-            Session session = mhu.getNewSession() ;
+
 
 
             List<Object> appUserGroups = mhu.executeQuery(session, "SELECT g FROM AppUserGroup g WHERE g.securityLabel = :securityLabel", new Object[][] {{"securityLabel", securityLabel}}, 0, 1);

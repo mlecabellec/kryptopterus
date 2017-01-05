@@ -1,49 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
-  <session-factory>
-    <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/test001?zeroDateTimeBehavior=convertToNull</property>
-    <property name="hibernate.connection.username">test001</property>
-    <property name="hibernate.connection.password">test001</property>
-    <property name="hibernate.connection.pool_size">100</property>
-    <property name="hibernate.current_session_context_class">managed</property>
-    <property name="hibernate.hbm2ddl.auto">update</property>
-    <property name="hibernate.hbm2ddl.delimiter">;</property>
-    <property name="javax.persistence.schema-generation.database.action">create</property>
-    <property name="javax.persistence.schema-generation.scripts.action">drop-and-create</property>
-    <property name="javax.persistence.schema-generation.scripts.create-target">db_create.sql</property>
-    <property name="javax.persistence.schema-generation.scripts.drop-target">db_drop.sql</property>
-    <property name="hibernate.max_fetch_depth">3</property>
-    <property name="hibernate.transaction.auto_close_session">true</property>
-    <property name="hibernate.connection.autocommit">true</property>
-    <property name="hibernate.jdbc.use_get_generated_keys">true</property>
-    <property name="hibernate.show_sql">true</property>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppStringProperty"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppPerson"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppActivityRelation"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppObject"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppActivityTemplate"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppUserGroup"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppActivityGroup"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppNumberProperty"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppIntegerProperty"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppPropertyTemplate"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppProperty"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppActivity"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppUserGroupMembership"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppUser"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppTranslation"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppActivityGraphTemplate"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppActivityGraph"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppActivityStatusTransition"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppDateProperty"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppActivityRelationTemplate"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppActivityRelationType"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppActivityGroupTemplate"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppActivityStatus"/>
-    <mapping class="com.booleanworks.kryptopterus.entities.AppPropertyType"/>
-  </session-factory>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/test001?zeroDateTimeBehavior=convertToNull</property>
+        <property name="hibernate.connection.username">test001</property>
+        <property name="hibernate.connection.password">test001</property>
+        <property name="hibernate.connection.initial_pool_size">10</property>    
+        <property name="hibernate.connection.pool_size">100</property>
+        <property name="hibernate.pool_validation_interval">10</property>
+        <property name="hibernate.current_session_context_class">managed</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.hbm2ddl.delimiter">;</property>
+        <property name="javax.persistence.schema-generation.database.action">create</property>
+        <property name="javax.persistence.schema-generation.scripts.action">drop-and-create</property>
+        <property name="javax.persistence.schema-generation.scripts.create-target">db_create.sql</property>
+        <property name="javax.persistence.schema-generation.scripts.drop-target">db_drop.sql</property>
+        <property name="hibernate.max_fetch_depth">3</property>
+        <property name="hibernate.transaction.auto_close_session">false</property>
+        <property name="hibernate.allow_update_outside_transaction">true</property>
+        <property name="hibernate.transaction.flush_before_completion">true</property>
+        <property name="hibernate.connection.autocommit">true</property>
+        <property name="hibernate.jdbc.use_get_generated_keys">true</property>
+        <property name="hibernate.show_sql">true</property>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppStringProperty"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppPerson"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppActivityRelation"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppObject"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppActivityTemplate"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppUserGroup"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppActivityGroup"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppNumberProperty"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppIntegerProperty"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppPropertyTemplate"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppProperty"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppActivity"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppUserGroupMembership"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppUser"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppTranslation"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppActivityGraphTemplate"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppActivityGraph"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppActivityStatusTransition"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppDateProperty"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppActivityRelationTemplate"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppActivityRelationType"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppActivityGroupTemplate"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppActivityStatus"/>
+        <mapping class="com.booleanworks.kryptopterus.entities.AppPropertyType"/>
+    </session-factory>
 </hibernate-configuration>
 
 

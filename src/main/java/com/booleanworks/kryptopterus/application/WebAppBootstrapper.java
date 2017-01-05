@@ -63,7 +63,7 @@ public class WebAppBootstrapper implements ServletContextListener {
         System.out.println("Bootstrap-CP0005");
 
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Session session = mhu.getNewSession() ;
+        Session session = mhu.getNewSession();
 
         System.out.println("Bootstrap-CP0010");
 
@@ -72,10 +72,10 @@ public class WebAppBootstrapper implements ServletContextListener {
 
         System.out.println("Bootstrap-CP0020");
 
-        AppUserGroup adminRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_ADMIN");
-        AppUserGroup userRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_USER");
-        AppUserGroup testUserRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_TESTUSER");
-        AppUserGroup anonymousRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_ANONYMOUS");
+        AppUserGroup adminRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_ADMIN", session);
+        AppUserGroup userRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_USER", session);
+        AppUserGroup testUserRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_TESTUSER", session);
+        AppUserGroup anonymousRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_ANONYMOUS", session);
 
         System.out.println("Bootstrap-CP0030");
 
@@ -94,6 +94,8 @@ public class WebAppBootstrapper implements ServletContextListener {
         AppActivityStatusTransition.findOrCreate("NOT_STARTED", "STARTED", "ROLE_USER", session);
         AppActivityStatusTransition.findOrCreate("STARTED", "FINISHED", "ROLE_USER", session);
 
+        mhu.closeSession(session);
+
     }
 
     public void setupTestData() {
@@ -109,17 +111,17 @@ public class WebAppBootstrapper implements ServletContextListener {
 
         System.out.println("Bootstrap-CP0050");
 
-        AppActivityStatus.findOrCreate("New activity from app bootstrap", "TESTSTATUS_NEW",session);
-        AppActivityStatus.findOrCreate("Finished (bootstrapactivity", "TESTSTATUS_FINISHED",session);
-        AppActivityStatusTransition.findOrCreate("TESTSTATUS_NEW", "TESTSTATUS_FINISHED", "ROLE_ADMIN",session);
+        AppActivityStatus.findOrCreate("New activity from app bootstrap", "TESTSTATUS_NEW", session);
+        AppActivityStatus.findOrCreate("Finished (bootstrapactivity", "TESTSTATUS_FINISHED", session);
+        AppActivityStatusTransition.findOrCreate("TESTSTATUS_NEW", "TESTSTATUS_FINISHED", "ROLE_ADMIN", session);
 
         System.out.println("Bootstrap-CP0060");
 
         ArrayList<AppActivity> testActivities = new ArrayList<>();
 
-        AppUserGroup testUserRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_TESTUSER");
+        AppUserGroup testUserRole = AppUserGroup.findOrCreateAppUserGroup("ROLE_TESTUSER", session);
 
-        AppUser adminUser = AppUser.findUserOrNull("admin");
+        AppUser adminUser = AppUser.findUserOrNull("admin", session);
         if (adminUser == null) {
             System.err.println("WARNING: mandatory data missing... rebuilding");
             this.setupMandatoryData();
@@ -127,8 +129,7 @@ public class WebAppBootstrapper implements ServletContextListener {
 
         for (int ct1 = 0; ct1 < 30; ct1++) {
 
-
-            Transaction transaction = mhu.beginTransaction(session);
+            Transaction transaction = mhu.beginTransaction(session, false);
 
             AppActivity newTestActivity = AppActivity.findOrCreateWithBusinessIdentifier(
                     "Test activity " + simpleDateFormat.format(c.getTime()), "TESTDATA-" + ct1, "TESTSTATUS_NEW", session);
@@ -147,13 +148,13 @@ public class WebAppBootstrapper implements ServletContextListener {
 
             mhu.saveOrUpdate(newTestActivity, session);
 
-            newTestActivity.addProperty(new AppProperty("MARKER", "TESTDATA"),session);
+            newTestActivity.addProperty(new AppProperty("MARKER", "TESTDATA"), session);
 
             mhu.saveOrUpdate(newTestActivity, session);
 
             testActivities.add(newTestActivity);
 
-            mhu.commitTransaction(transaction);
+            mhu.commitTransaction(session, transaction);
 
         }
 
@@ -161,15 +162,12 @@ public class WebAppBootstrapper implements ServletContextListener {
 
         for (int ct2 = 0; ct2 < 50; ct2++) {
 
-            Transaction transaction = mhu.beginTransaction(session);
+            Transaction transaction = mhu.beginTransaction(session, false);
 
             AppActivity a1 = testActivities.get(random.nextInt(testActivities.size()));
             AppActivity a2 = testActivities.get(random.nextInt(testActivities.size()));
 
             AppActivityRelation aar = new AppActivityRelation();
-
-            
-            aar.link(a1, a2, session);
 
             aar.setAuthorizedForView(testUserRole);
             aar.setAuthorizedForModification(testUserRole);
@@ -184,17 +182,19 @@ public class WebAppBootstrapper implements ServletContextListener {
 
             mhu.saveOrUpdate(aar, session);
 
-            aar.addProperty(new AppProperty("MARKER", "TESTDATA"),session);
+            aar.link(a1, a2, session);
+
+            aar.addProperty(new AppProperty("MARKER", "TESTDATA"), session);
 
             mhu.saveOrUpdate(aar, session);
 
-            mhu.commitTransaction(transaction);
+            mhu.commitTransaction(session, transaction);
+            mhu.closeSession(session);
 
         }
 
     }
 
-    
     @Deprecated
     public void cleanTestData() {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
@@ -202,7 +202,7 @@ public class WebAppBootstrapper implements ServletContextListener {
         removeTestActivityRelations:
         {
             Session s = mhu.getNewSession();
-            Transaction transaction = mhu.beginTransaction(s);
+            Transaction transaction = mhu.beginTransaction(s, false);
             CriteriaBuilder cb = s.getCriteriaBuilder();
             CriteriaDelete<AppActivityRelation> cd1 = cb.createCriteriaDelete(AppActivityRelation.class);
             Root r1 = cd1.from(AppActivityRelation.class);
@@ -211,13 +211,13 @@ public class WebAppBootstrapper implements ServletContextListener {
             int numDeleted = q1.executeUpdate();
 
             System.out.println("AppActivityRelation / numDeleted = " + numDeleted);
-            mhu.commitTransaction(transaction);
+            mhu.commitTransaction(s, transaction);
         }
 
         removeTestActivities:
         {
             Session s = mhu.getNewSession();
-            Transaction transaction = mhu.beginTransaction(s);
+            Transaction transaction = mhu.beginTransaction(s, true);
             CriteriaBuilder cb = s.getCriteriaBuilder();
             CriteriaDelete<AppActivity> cd1 = cb.createCriteriaDelete(AppActivity.class);
             Root r1 = cd1.from(AppActivity.class);
@@ -226,7 +226,7 @@ public class WebAppBootstrapper implements ServletContextListener {
             int numDeleted = q1.executeUpdate();
 
             System.out.println("Activity / numDeleted = " + numDeleted);
-            mhu.commitTransaction(transaction);
+            mhu.commitTransaction(s, transaction);
         }
 
     }

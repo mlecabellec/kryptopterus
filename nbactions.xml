@@ -43,4 +43,17 @@
                 <netbeans.deploy>true</netbeans.deploy>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-clean build package without tests</actionName>
+            <displayName>clean build run without tests</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+                <goal>package</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+                <netbeans.deploy>true</netbeans.deploy>
+            </properties>
+        </action>
     </actions>
