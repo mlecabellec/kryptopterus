@@ -34,6 +34,8 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Root;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import org.hibernate.CacheMode;
+import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -63,7 +65,7 @@ public class WebAppBootstrapper implements ServletContextListener {
         System.out.println("Bootstrap-CP0005");
 
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Session session = mhu.getNewSession();
+        Session session = mhu.getNewSession(FlushMode.ALWAYS, CacheMode.IGNORE);
 
         System.out.println("Bootstrap-CP0010");
 
@@ -104,7 +106,7 @@ public class WebAppBootstrapper implements ServletContextListener {
         System.out.println("Bootstrap-CP0041");
 
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Session session = mhu.getNewSession();
+        Session session = mhu.getNewSession(FlushMode.ALWAYS, CacheMode.IGNORE);
 
         Calendar c = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
@@ -189,9 +191,10 @@ public class WebAppBootstrapper implements ServletContextListener {
             mhu.saveOrUpdate(aar, session);
 
             mhu.commitTransaction(session, transaction);
-            mhu.closeSession(session);
 
         }
+
+        mhu.closeSession(session);
 
     }
 

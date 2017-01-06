@@ -114,6 +114,12 @@ public class AppObject implements Serializable {
     @XmlElement
     protected String displayName;
 
+    @XmlElement    
+    protected Boolean isTemplateObject ; 
+    
+    @XmlElement    
+    protected AppObject sourceTemplate ;     
+
     @XmlElement
     @ManyToOne
     protected AppUser creator;
@@ -283,5 +289,23 @@ public class AppObject implements Serializable {
     public void setAuthorizedForDeletion(AppUserGroup authorizedForDeletion) {
         this.authorizedForDeletion = authorizedForDeletion;
     }
+
+    public Boolean getIsTemplateObject() {
+        return isTemplateObject;
+    }
+
+    public void setIsTemplateObject(Boolean isTemplateObject) {
+        this.isTemplateObject = isTemplateObject;
+    }
+
+    public AppObject getSourceTemplate() {
+        return sourceTemplate;
+    }
+
+    public void setSourceTemplate(AppObject sourceTemplate) {
+        this.sourceTemplate = sourceTemplate;
+    }
+    
+    
 
 }

@@ -423,8 +423,40 @@ this.APP["activityList"] = this.APP["activityList"] || {
 };
 APP.activityList.bootstrap();
 
+//------------------------------------------------------------------------------
+
+this.APP["activityGraph"] = this.APP["activityGraph"] || {
+    moduleInfo:
+            {
+                moduleId: "APP.activityGraph",
+                moduleVersion: "0.0.2-DEV",
+                description: "TBD"
+            },
+    bootstrap: function bootstrap() {
+        APP.loadedModules = APP.loadedModules.concat(APP.activityGraph.moduleInfo);
+    },
+    gui: {
+        init: function init() {
+
+            $("#displayDemoGraph001").unbind("click");
+            $("#displayDemoGraph001").on("click", APP.activityGraph.gui.displayDemoGraph001Step0);
+
+            //APP.home.gui.initQuillEditor_v1();
+            //APP.home.gui.getMessages(0, 50);
+        },
+        displayDemoGraph001Step0: function displayDemoGraph001Step0()
+        {
+            window.alert("Hit displayDemoGraph001Step0 !!");
+        }
+    },
+    toolKit: {},
+    data: {}
+};
+APP.activityGraph.bootstrap();
 
 
+
+//------------------------------------------------------------------------------
 
 $(function onReadyHandler()
 {
@@ -432,4 +464,5 @@ $(function onReadyHandler()
     APP.login.gui.init();
     APP.home.gui.init();
     APP.activityList.gui.init();
+    APP.activityGraph.gui.init();
 });

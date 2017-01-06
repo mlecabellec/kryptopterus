@@ -48,8 +48,7 @@ public class AppProperty extends AppObject implements Serializable {
         this.setValue(value);
     }    
 
-    @ManyToOne
-    protected AppPropertyTemplate sourceTemplate;
+
 
     @ManyToOne(cascade = {CascadeType.ALL})
     @JsonBackReference("properties")
@@ -84,13 +83,7 @@ public class AppProperty extends AppObject implements Serializable {
         return "com.booleanworks.kryptopterus.entities.AppProperty[ id=" + id + " ]";
     }
 
-    public AppPropertyTemplate getSourceTemplate() {
-        return sourceTemplate;
-    }
 
-    public void setSourceTemplate(AppPropertyTemplate sourceTemplate) {
-        this.sourceTemplate = sourceTemplate;
-    }
 
     public AppObject getParentObject() {
         return parentObject;

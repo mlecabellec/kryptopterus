@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Boolean Works.
+ * Copyright 2017 Boolean Works.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
  */
 package com.booleanworks.kryptopterus.services.transients;
 
+import com.booleanworks.kryptopterus.entities.AppActivity;
+import com.booleanworks.kryptopterus.entities.AppActivityRelation;
 import java.io.Serializable;
+import java.util.Set;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -24,24 +27,21 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vortigern
  */
 @XmlRootElement
-public class Translation implements Serializable {
-
+public class DisplayGraphData implements Serializable{
+    
     @XmlElement
-    public String sourceContext;
+    public long[] activityIds ;
     @XmlElement
-    public String sourceIdentifierCode;
+    public long[] relationIds ;
+    
     @XmlElement
-    public String sourceCssSelector;
+    public int extensionHops ;
+    
     @XmlElement
-    public String sourceText;
-
+    public Set<AppActivity> activities ;
+    
     @XmlElement
-    public String translatedContext;
-    @XmlElement
-    public String translatedIdentifierCode;
-    @XmlElement
-    public String translatedCssSelector;
-    @XmlElement
-    public String translatedText;
-
+    public Set<AppActivityRelation> relations ; 
+    
+    
 }

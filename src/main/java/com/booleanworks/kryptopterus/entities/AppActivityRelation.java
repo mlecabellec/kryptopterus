@@ -25,6 +25,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.CacheMode;
+import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -108,18 +110,21 @@ public class AppActivityRelation extends AppObject implements Serializable {
 
     @Deprecated
     public void link(AppActivity first, AppActivity second) {
-        Session session = MainHibernateUtil.getInstance().getNewSession();
+        Session session = MainHibernateUtil.getInstance().getNewSession(FlushMode.ALWAYS, CacheMode.IGNORE);
 
         this.link(first, second, session);
+        
+        session.flush();
+        session.close();
     }
 
     public void link(AppActivity first, AppActivity second, Session session) {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Transaction t = mhu.beginTransaction(session, false);
         
-        if(first.getId() == second.getId())
-        {
-            return ;
+        mhu.saveOrUpdate(this, session);
+
+        if (first.getId() == second.getId()) {
+            return;
         }
 
         firstActivityProcess:
@@ -191,7 +196,6 @@ public class AppActivityRelation extends AppObject implements Serializable {
 
         }
 
-        mhu.commitTransaction(session, t);
     }
 
 }

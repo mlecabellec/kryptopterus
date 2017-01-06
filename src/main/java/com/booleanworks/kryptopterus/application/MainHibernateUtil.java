@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.FlushModeType;
+import org.hibernate.CacheMode;
+import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -81,6 +83,19 @@ public class MainHibernateUtil {
         System.out.println("return session; => " + session.hashCode());
         return session;
     }
+    
+     public Session getNewSession(FlushMode flushMode , CacheMode cacheMode) {
+        System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.getNewSession()");
+
+        Session session;
+        session = this.sessionFactory.openSession();
+        session.setHibernateFlushMode(flushMode);
+        session.setCacheMode(cacheMode);
+
+        System.out.println("return session; => " + session.hashCode());
+        return session;
+    }   
+    
 
     public Session getCurrentSession() {
         System.out.println("com.booleanworks.kryptopterus.application.MainHibernateUtil.getCurrentSession()");

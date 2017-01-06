@@ -16,6 +16,7 @@
 package com.booleanworks.kryptopterus.services.transients;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -25,9 +26,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class SearchRequest implements Serializable{
     
+    @XmlElement
     public String searchExpression ;
+    @XmlElement
     public String objectType ;
+    @XmlElement
     public int offset  ;
+    @XmlElement
     public int maxResults ;
 
     public SearchRequest() {
