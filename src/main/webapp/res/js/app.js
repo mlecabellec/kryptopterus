@@ -284,7 +284,7 @@ this.APP["activityList"] = this.APP["activityList"] || {
                 url: "s/activities/search",
                 method: "POST",
                 cache: false,
-                data: JSON.stringify({"searchExpression": "ALL", "offset":0,"maxResults":50}),
+                data: JSON.stringify({"searchExpression": "ALL", "offset": 0, "maxResults": 50}),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 crossDomain: false,
@@ -300,22 +300,22 @@ this.APP["activityList"] = this.APP["activityList"] || {
             var handsOnTableActivityList0Element = document.querySelector("#handsOnTableActivityList0");
 
             APP.activityList.data.tableObject = new Handsontable(handsOnTableActivityList0Element, APP.activityList.data.tableSettings);
-            
-            APP.activityList.gui.fitActivityListTableToContainer() ;
-            
+
+            APP.activityList.gui.fitActivityListTableToContainer();
+
             $("#activityListContainer0").unbind("resize");
-            $("#activityListContainer0").on("resize", APP.activityList.gui.fitActivityListTableToContainer); 
-            
-            $(window).on("resize", APP.activityList.gui.fitActivityListTableToContainer);             
-            
+            $("#activityListContainer0").on("resize", APP.activityList.gui.fitActivityListTableToContainer);
+
+            $(window).on("resize", APP.activityList.gui.fitActivityListTableToContainer);
+
         },
         fitActivityListTableToContainer: function fitActivityListTableToContainer()
         {
-            var newWidth = $("#activityListContainer0").innerWidth() -30;
-            var newHeight = $("#activityListContainer0").innerHeight() - 30 ;
-            
+            var newWidth = $("#activityListContainer0").innerWidth() - 30;
+            var newHeight = $("#activityListContainer0").innerHeight() - 30;
+
             APP.activityList.data.tableObject.updateSettings({
-                width: newWidth ,
+                width: newWidth,
                 height: newHeight
             });
         },
@@ -325,7 +325,7 @@ this.APP["activityList"] = this.APP["activityList"] || {
                 url: "s/activities/search",
                 method: "POST",
                 cache: false,
-                data: JSON.stringify({"searchExpression": $("#activityListSearchField").val(), "offset":0,"maxResults":50}),
+                data: JSON.stringify({"searchExpression": $("#activityListSearchField").val(), "offset": 0, "maxResults": 50}),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 crossDomain: false,
@@ -446,11 +446,76 @@ this.APP["activityGraph"] = this.APP["activityGraph"] || {
         },
         displayDemoGraph001Step0: function displayDemoGraph001Step0()
         {
-            window.alert("Hit displayDemoGraph001Step0 !!");
+
+            var ids = [];
+
+            var jqxhr = $.ajax({
+                url: "s/graphs/getAllRelatedActivityIds",
+                method: "POST",
+                cache: false,
+                data: JSON.stringify(ids),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: false,
+                success: APP.activityGraph.gui.displayDemoGraph001Step1
+            });
+        },
+        displayDemoGraph001Step1: function displayDemoGraph001Step1(data)
+        {
+            APP.activityGraph.data.activityIds = data ;
+            
+            window.alert("Hit displayDemoGraph001Step1 !!");
+            
+            var jqxhr = $.ajax({
+                url: "s/graphs/getActivitiesFromIds",
+                method: "POST",
+                cache: false,
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: false,
+                success: APP.activityGraph.gui.displayDemoGraph001Step2
+            });            
+            
+        },
+        displayDemoGraph001Step2: function displayDemoGraph001Step2(data)
+        {
+            
+            APP.activityGraph.data.activities = data ;
+            
+            window.alert("Hit displayDemoGraph001Step2 !!");
+
+            var jqxhr = $.ajax({
+                url: "s/graphs/getRelationsFromActivityIds",
+                method: "POST",
+                cache: false,
+                data: JSON.stringify(APP.activityGraph.data.activityIds),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                crossDomain: false,
+                success: APP.activityGraph.gui.displayDemoGraph001Step3
+            });            
+        
+        },
+        displayDemoGraph001Step3: function displayDemoGraph001Step3(data)
+        {
+            APP.activityGraph.data.activityRelations = data ;
+            
+            window.alert("Hit displayDemoGraph001Step3 !!");
+        },
+        displayDemoGraph001Step4: function displayDemoGraph001Step4(data)
+        {
+            window.alert("Hit displayDemoGraph001Step4 !!");
         }
+
     },
     toolKit: {},
-    data: {}
+    data: {
+        activityIds : [] ,
+        activities : [] ,
+        activityRelationIds : [] ,
+        activityRelations : []
+    }
 };
 APP.activityGraph.bootstrap();
 

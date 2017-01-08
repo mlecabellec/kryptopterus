@@ -19,23 +19,13 @@ import com.booleanworks.kryptopterus.application.MainHibernateUtil;
 import com.booleanworks.kryptopterus.entities.AppActivity;
 import com.booleanworks.kryptopterus.entities.AppActivityRelation;
 import com.booleanworks.kryptopterus.services.transients.DisplayGraphData;
-import com.booleanworks.kryptopterus.services.transients.SearchRequest;
-import com.booleanworks.kryptopterus.utilities.SearchExpressionParser;
-import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.hibernate.Session;
 
@@ -47,69 +37,113 @@ import org.hibernate.Session;
 public class ActivityGraphService {
 
     @POST
-    @Path("getGraphData")
+    @Path("getAllRelatedActivityIds")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public DisplayGraphData getGraphData(DisplayGraphData graphData) {
-
-        HashSet<AppActivity> resultActivities = new HashSet<AppActivity>();
-        HashSet<AppActivityRelation> resultRelations = new HashSet<AppActivityRelation>();
+    @Consumes(MediaType.APPLICATION_JSON)    
+    public List<Long> getAllRelatedActivityIds(List<Long> ids)
+    {
 
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Session session = mhu.getResidentSession();
+        Session session = mhu.getNewSession();
 
-        if (graphData == null || graphData.activityIds == null || (graphData.activityIds.length == 0)) {
+        
+        ArrayList<AppActivity> resultActivities = new ArrayList<>();
+        ArrayList<Long> result = new ArrayList<>();
+        
+
+        if(ids == null || ids.size() == 0)
+        {
             resultActivities.addAll(session.createQuery("SELECT a FROM AppActivity a", AppActivity.class).list());
-            graphData = new DisplayGraphData();
-        } else {
-            for (long cId : graphData.activityIds) {
-                AppActivity foundActivity = session.get(AppActivity.class, cId);
-
-                if (foundActivity != null) {
-                    resultActivities.add(foundActivity);
-
-                    if (graphData.extensionHops > 0) {
-                        HashSet<AppActivity> extendedResult = new HashSet<>();
-
-                        for (AppActivity appActivity : resultActivities) {
-                            for (AppActivityRelation relation : appActivity.getRelationsAsFirstActivity()) {
-                                if (relation.getSecondActivity() != null) {
-                                    extendedResult.add(relation.getSecondActivity());
-                                }
-                            }
-
-                            for (AppActivityRelation relation : appActivity.getRelationsAsSecondActivity()) {
-                                if (relation.getFirstActivity() != null) {
-                                    extendedResult.add(relation.getFirstActivity());
-                                }
-                            }
-
-                        }
-
-                        resultActivities.addAll(extendedResult);
+        } else
+        {
+            for(Long cId : ids)
+            {
+                AppActivity foundActivity = session.get(AppActivity.class, cId) ;
+                if(foundActivity != null)
+                {
+                    for(AppActivityRelation aar : foundActivity.getRelationsAsFirstActivity())
+                    {
+                        resultActivities.add(aar.getSecondActivity()) ;
                     }
-                }
+                    for(AppActivityRelation aar : foundActivity.getRelationsAsSecondActivity())
+                    {
+                        resultActivities.add(aar.getFirstActivity()) ;
+                    }
 
+                }
             }
         }
-
-        if (graphData.activities == null) {
-            graphData.activities = new HashSet<>();
+        
+        for(AppActivity aa : resultActivities)
+        {
+            result.add(aa.getId()) ;
         }
-
-        if (graphData.relations == null) {
-            graphData.relations = new HashSet<>();
-        }
-
-        graphData.activities.addAll(resultActivities);
-
-        for (AppActivity appActivity : graphData.activities) {
-            graphData.relations.addAll(appActivity.getRelations());
-        }
-
+        
         session.close();
+        
+        return result ;
+    }
+    
+    @POST
+    @Path("getActivitiesFromIds")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)  
+    public List<AppActivity> getActivitiesFromIds(List<Long> ids)
+    {
+        
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
+        Session session = mhu.getNewSession() ;
 
-        return graphData;
+        ArrayList<AppActivity> result = new ArrayList<>();
+        
+        for(Long cId : ids)
+        {
+                AppActivity foundActivity = session.get(AppActivity.class, cId) ;
+                if(foundActivity != null)
+                {
+                    result.add(foundActivity) ;
+                }
+            
+        }
+        
+        //session.close();
+        return result ;
     }
 
+    
+    @POST
+    @Path("getRelationsFromActivityIds")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)  
+    public List<AppActivityRelation> getRelationsFromActivityIds(List<Long> ids)
+    {
+        
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance();
+        Session session = mhu.getNewSession() ;
+
+        ArrayList<AppActivityRelation> result = new ArrayList<>();
+        
+        for(Long cId : ids)
+        {
+                AppActivity foundActivity = session.get(AppActivity.class, cId) ;
+                if(foundActivity != null)
+                {
+                    for(AppActivityRelation aar : foundActivity.getRelationsAsFirstActivity())
+                    {
+                        result.add(aar);
+                    }
+                    for(AppActivityRelation aar : foundActivity.getRelationsAsSecondActivity())
+                    {
+                        result.add(aar);
+                    }
+
+                }
+            
+        }
+        
+        //session.close();
+        return result ;
+    }
+    
+    
 }
