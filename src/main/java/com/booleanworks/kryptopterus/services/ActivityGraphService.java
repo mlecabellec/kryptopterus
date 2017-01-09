@@ -21,9 +21,11 @@ import com.booleanworks.kryptopterus.entities.AppActivityRelation;
 import com.booleanworks.kryptopterus.services.transients.DisplayGraphData;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -143,57 +145,89 @@ public class ActivityGraphService {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
         Session session = mhu.getNewSession();
 
-        ArrayList<AppActivity> resultActivities = new ArrayList<>();
+        HashMap<Long, AppActivity> resultActivities = new HashMap<>();
 
-        ArrayList<AppActivityRelation> resultActivityRelations = new ArrayList<>();
+        HashMap<Long, AppActivityRelation> resultActivityRelations = new HashMap<>();
 
         if (ids == null || ids.size() == 0) {
-            resultActivities.addAll(session.createQuery("SELECT a FROM AppActivity a", AppActivity.class).list());
+            
+            List<AppActivity> allActivities = session.createQuery("SELECT a FROM AppActivity a", AppActivity.class).list() ;
+            for(AppActivity cActivity : allActivities)
+            {
+                resultActivities.put(cActivity.getId(), cActivity) ;
+            }
+            
 
         } else {
             for (Long cId : ids) {
                 AppActivity foundActivity = session.get(AppActivity.class, cId);
 
                 if (foundActivity != null) {
-                    resultActivities.add(foundActivity);
+                    resultActivities.put(foundActivity.getId(),foundActivity);
 
                 }
             }
         }
 
-        for (AppActivity aa : resultActivities) {
+        for (AppActivity aa : resultActivities.values()) {
             
 
             for (AppActivityRelation aar : aa.getRelationsAsFirstActivity()) {
-                resultActivityRelations.add(aar);
+                resultActivityRelations.put(aar.getId(),aar);
                 
                 AppActivity secondActivity = aar.getSecondActivity() ;
                 if(secondActivity != null)
                 {
-                    result.activities.add(secondActivity.asMap(true, true, 1)) ;
+                    //result.activities.add(secondActivity.asMap(true, true, 1)) ;
                 }
             }
             for (AppActivityRelation aar : aa.getRelationsAsSecondActivity()) {
-                resultActivityRelations.add(aar);
+                resultActivityRelations.put(aar.getId(),aar);
 
                 AppActivity firstActivity = aar.getFirstActivity() ;
                 if(firstActivity != null)
                 {
-                    result.activities.add(firstActivity.asMap(true, true, 1)) ;
+                    //result.activities.add(firstActivity.asMap(true, true, 1)) ;
                 }
             }
             
-            result.activities.add(aa.asMap(true, true, 1));
+            Map<String,Object> activityAsMap = aa.asMap(true, true, 1) ;
+            
+            //vis.js facilitators
+            
+            if(aa.getBusinessIdentifier() != null)
+            {
+                activityAsMap.put("label", aa.getBusinessIdentifier() ) ;
+            }      
+            activityAsMap.put("size", "150") ;
+            activityAsMap.put("shape", "box") ;
+            
+            result.activities.add(activityAsMap);
 
         }
 
-        for (AppActivityRelation aar : resultActivityRelations) {
+        for (AppActivityRelation aar : resultActivityRelations.values()) {
             
             Map<String,Object> aarAsMap = aar.asMap(true, true, 1) ;
             
             //D3.js facilitator
             aarAsMap.put("source", aar.getFirstActivity() != null ? aar.getFirstActivity().getId() : null ) ;
             aarAsMap.put("target", aar.getSecondActivity() != null ? aar.getSecondActivity().getId() : null ) ;
+
+            //vis.js facilitators
+            aarAsMap.put("from", aar.getFirstActivity() != null ? aar.getFirstActivity().getId() : null ) ;
+            aarAsMap.put("to", aar.getSecondActivity() != null ? aar.getSecondActivity().getId() : null ) ;
+            if(aar.getDisplayName() != null)
+            {
+                //aarAsMap.put("label", aar.getDisplayName() ) ;
+            } 
+            aarAsMap.put("arrows", "to" ) ;
+            HashMap<String,String> smoothLinkProperties = new HashMap<>();
+            smoothLinkProperties.put("type", "cubicBezier");
+            aarAsMap.put("smooth", smoothLinkProperties) ;
+            aarAsMap.put("physics", false) ;
+            
+
             
             result.relations.add(aarAsMap);
         }

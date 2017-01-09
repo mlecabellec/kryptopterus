@@ -162,7 +162,7 @@ public class WebAppBootstrapper implements ServletContextListener {
 
         Random random = new Random();
 
-        for (int ct2 = 0; ct2 < 50; ct2++) {
+        for (int ct2 = 0; ct2 < 10; ct2++) {
 
             Transaction transaction = mhu.beginTransaction(session, false);
 

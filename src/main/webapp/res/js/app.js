@@ -447,7 +447,8 @@ this.APP["activityGraph"] = this.APP["activityGraph"] || {
         displayDemoGraph001Step0: function displayDemoGraph001Step0()
         {
 
-            var ids = [20,60,72,38,78,68];
+            //var ids = [46, 20, 26, 36, 66, 32];
+            var ids = [];
 
             var jqxhr = $.ajax({
                 url: "s/graphs/getGraphDataFromActivityIds",
@@ -466,7 +467,49 @@ this.APP["activityGraph"] = this.APP["activityGraph"] || {
 
             //window.alert("Hit displayDemoGraph001Step1 !!");
 
-            $("#mainSubContainer").load("res/templates/graphView_v0.html", {}, APP.activityGraph.gui.displayDemoGraph001Step2);
+            //$("#mainSubContainer").load("res/templates/graphView_v0.html", {}, APP.activityGraph.gui.displayDemoGraph001Step2);
+
+            $("#mainSubContainer").css("width", "1140px");
+            $("#mainSubContainer").css("height", "1140px");
+            
+            $("#jumbotron>h1").text("Let's go...");
+            $("#jumbotron").fadeOut();
+            $("#jumbotron>h1").text("Bienvenue !!");            
+
+
+            var opts = {
+                manipulation: true,
+                height: '90%',
+                layout: {
+                    hierarchical: {
+                        enabled: false,
+                        levelSeparation: 150,
+                        nodeSpacing: 100,
+                        treeSpacing: 200,
+                        blockShifting: true,
+                        edgeMinimization: true,
+                        parentCentralization: true,
+                        direction: 'LR', // UD, DU, LR, RL
+                        sortMethod: 'hubsize'   // hubsize, directed
+                    }
+                },
+                physics: {
+                    repulsion: {
+                        centralGravity: 0.2,
+                        springLength: 200,
+                        springConstant: 0.05,
+                        nodeDistance: 100,
+                        damping: 0.09
+                    },
+                    hierarchicalRepulsion: {
+                        nodeDistance: 200
+                    }
+                }
+            };
+
+            var mainSubContainer = document.getElementById('mainSubContainer');
+            var data = {'nodes': APP.activityGraph.data.testGraphData.activities, 'edges': APP.activityGraph.data.testGraphData.relations}
+            var gph = new vis.Network(mainSubContainer, data, opts);
 
 
         },
@@ -477,73 +520,8 @@ this.APP["activityGraph"] = this.APP["activityGraph"] || {
 
             //window.alert("Hit displayDemoGraph001Step2 !!");
 
-            var mainSvg = d3.select("#graphView_v0_svg");
-            var mainSvgWidth = mainSvg.attr("width");
-            var mainSvgHeight = mainSvg.attr("height");
 
-            var d3Simulation = d3.forceSimulation()
-                    .force("link", d3.forceLink().id(function (d) {
-                        return d.id;
-                    }))
-                    .force("charge", d3.forceManyBody())
-                    .force("center", d3.forceCenter(mainSvgWidth / 2, mainSvgHeight / 2));
 
-            var link = mainSvg.append("g")
-                    .attr("class", "links")
-                    .selectAll("line")
-                    .data(APP.activityGraph.data.testGraphData.relations)
-                    .enter()
-                    .append("line")
-                    .attr("stroke", "black")
-                    .attr("stroke-width", "2");
-
-            var node = mainSvg.append("g")
-                    .attr("class", "nodes")
-                    .selectAll("circle")
-                    .data(APP.activityGraph.data.testGraphData.activities)
-                    .enter()
-                    .append("circle")
-                    .attr("stroke-width", "2")
-                    .attr("fill", "silver")
-                    .attr("r", "4");
-
-            node.append("text").text(function (d) {
-                return d.displayName;
-            }).attr("color", "black");
-
-            d3Simulation.nodes(APP.activityGraph.data.testGraphData.activities)
-                    .on("tick", function () {
-                        link
-                                .attr("x1", function (d) {
-                                    return d.source.x;
-                                })
-                                .attr("y1", function (d) {
-                                    return d.source.y;
-                                })
-                                .attr("x2", function (d) {
-                                    return d.target.x;
-                                })
-                                .attr("y2", function (d) {
-                                    return d.target.y;
-                                });
-
-                        node
-                                .attr("cx", function (d) {
-                                    return d.x;
-                                })
-                                .attr("cy", function (d) {
-                                    return d.y;
-                                });
-                    });
-
-                d3Simulation.force("link").links(APP.activityGraph.data.testGraphData.relations);
-                d3Simulation.force("link").distance(function(){return 400;});
-                //d3Simulation.force("link").strength(function(){return 5;});
-                d3Simulation.force("charge").distanceMin(function(){return 0;});
-                d3Simulation.force("charge").distanceMax(function(){return 500});
-                d3Simulation.force("charge").strength(function(){return -30;});
-
-                
         },
         displayDemoGraph001Step3: function displayDemoGraph001Step3(data)
         {
