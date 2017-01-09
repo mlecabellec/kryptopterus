@@ -21,9 +21,17 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -69,13 +77,11 @@ public class AppObject implements Serializable {
     @XmlElement
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected Long id;
-    
+
     @XmlElement
     @Version
     @GeneratedValue(strategy = GenerationType.AUTO)
-    protected Long version ;
-    
-    
+    protected Long version;
 
     public Long getId() {
         return id;
@@ -92,8 +98,6 @@ public class AppObject implements Serializable {
     public void setVersion(Long version) {
         this.version = version;
     }
-    
-    
 
     @OneToMany(mappedBy = "parentObject", cascade = {CascadeType.ALL})
     @JsonManagedReference("parentObject")
@@ -102,23 +106,23 @@ public class AppObject implements Serializable {
     @XmlElement
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd-HH-mm-ss", timezone="CET")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd-HH-mm-ss", timezone = "CET")
     protected Date creationDate;
 
     @XmlElement
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd-HH-mm-ss", timezone="CET")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd-HH-mm-ss", timezone = "CET")
     protected Date modificationDate;
 
     @XmlElement
     protected String displayName;
 
-    @XmlElement    
-    protected Boolean isTemplateObject ; 
-    
-    @XmlElement    
-    protected AppObject sourceTemplate ;     
+    @XmlElement
+    protected Boolean isTemplateObject;
+
+    @XmlElement
+    protected AppObject sourceTemplate;
 
     @XmlElement
     @ManyToOne
@@ -166,8 +170,7 @@ public class AppObject implements Serializable {
     }
 
     public Set<AppProperty> getProperties() {
-        if(this.properties == null)
-        {
+        if (this.properties == null) {
             this.properties = new HashSet<>();
         }
         return properties;
@@ -175,14 +178,14 @@ public class AppObject implements Serializable {
 
     @Deprecated
     public void addProperty(AppProperty appProperty) {
-        Session session = MainHibernateUtil.getInstance().getNewSession() ;
+        Session session = MainHibernateUtil.getInstance().getNewSession();
         this.addProperty(appProperty, session);
     }
 
     public void addProperty(AppProperty appProperty, Session session) {
 
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Transaction t = mhu.beginTransaction(session,false);
+        Transaction t = mhu.beginTransaction(session, false);
 
         if (appProperty.getParentObject() == null) {
             appProperty.setParentObject(this);
@@ -195,7 +198,7 @@ public class AppObject implements Serializable {
         mhu.saveOrUpdate(appProperty, session);
         mhu.saveOrUpdate(this, session);
 
-        mhu.commitTransaction(session,t);
+        mhu.commitTransaction(session, t);
 
     }
 
@@ -206,7 +209,7 @@ public class AppObject implements Serializable {
 
     public void removeProperty(AppProperty appProperty, Session session) {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Transaction t = mhu.beginTransaction(session,false);
+        Transaction t = mhu.beginTransaction(session, false);
 
         if (appProperty.getParentObject().equals(this)) {
             appProperty.setParentObject(null);
@@ -219,7 +222,7 @@ public class AppObject implements Serializable {
         mhu.delete(appProperty, session);
         mhu.saveOrUpdate(this, session);
 
-        mhu.commitTransaction(session,t);
+        mhu.commitTransaction(session, t);
     }
 
     public void setProperties(Set<AppProperty> properties) {
@@ -305,7 +308,55 @@ public class AppObject implements Serializable {
     public void setSourceTemplate(AppObject sourceTemplate) {
         this.sourceTemplate = sourceTemplate;
     }
-    
-    
+
+    public Map<String, Object> asMap(boolean processCollections, boolean processObjects, int depth) {
+        HashMap<String, Object> result = new HashMap<>();
+
+        ArrayList<Field> knownFields = new ArrayList<Field>();
+
+        Class cClass = this.getClass();
+        while (!cClass.getCanonicalName().equals(Object.class.getCanonicalName())) {
+            knownFields.addAll(Arrays.asList(cClass.getDeclaredFields()));
+            cClass = cClass.getSuperclass();
+        }
+
+        for (Field cField : knownFields) {
+
+            try {
+                
+                String cFieldName = cField.getName() ;
+                Object value = cField.get(this) ;
+                
+                Class cFieldClass  = cField.getType() ;
+                
+                
+                if(Collection.class.isAssignableFrom(cFieldClass) && processCollections)
+                {
+                    //TODO
+                }else if(Number.class.isAssignableFrom(cFieldClass))
+                {
+                    //TODO
+                }else if(String.class.isAssignableFrom(cFieldClass))
+                {
+                    //TODO
+                }else if(AppObject.class.isAssignableFrom(cFieldClass) && processObjects)
+                {
+                    //TODO
+                }else
+                {
+                    //TODO
+                }
+                
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(AppObject.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(AppObject.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+
+        return result;
+
+    }
 
 }

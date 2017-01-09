@@ -18,6 +18,7 @@ package com.booleanworks.kryptopterus.services.transients;
 import com.booleanworks.kryptopterus.entities.AppActivity;
 import com.booleanworks.kryptopterus.entities.AppActivityRelation;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -38,10 +39,7 @@ public class DisplayGraphData implements Serializable{
     public int extensionHops ;
     
     @XmlElement
-    public Set<AppActivity> activities ;
-    
-    @XmlElement
-    public Set<AppActivityRelation> relations ; 
+    public List<long[]> relationLinkedIds ;
     
     
 }
