@@ -323,36 +323,82 @@ public class AppObject implements Serializable {
         for (Field cField : knownFields) {
 
             try {
-                
-                String cFieldName = cField.getName() ;
-                Object value = cField.get(this) ;
-                
-                Class cFieldClass  = cField.getType() ;
-                
-                
-                if(Collection.class.isAssignableFrom(cFieldClass) && processCollections)
-                {
-                    //TODO
-                }else if(Number.class.isAssignableFrom(cFieldClass))
-                {
-                    //TODO
-                }else if(String.class.isAssignableFrom(cFieldClass))
-                {
-                    //TODO
-                }else if(AppObject.class.isAssignableFrom(cFieldClass) && processObjects)
-                {
-                    //TODO
-                }else
-                {
+
+                String cFieldName = cField.getName();
+                Object value = cField.get(this);
+
+                Class cFieldClass = cField.getType();
+
+                if ((value != null) && Collection.class.isAssignableFrom(cFieldClass) && processCollections && (depth > 0)) {
+
+                    Collection valueAsCollection = (Collection) value;
+
+                    ArrayList valueAsList = new ArrayList();
+
+                    for (Object cValue : valueAsCollection.toArray()) {
+                        if (Number.class.isAssignableFrom(cFieldClass)) {
+                            result.put(cFieldName, value);
+
+                        } else if (String.class.isAssignableFrom(cFieldClass)) {
+
+                            if ((cValue != null) &&  !cFieldName.contains("secret")) {
+                                result.put(cFieldName, value);
+                            }else
+                            {
+                                result.put(cFieldName, null);
+                            }
+
+                        } else if (Date.class.isAssignableFrom(cFieldClass)) {
+
+                            result.put(cFieldName, value);
+
+                        } else if (AppObject.class.isAssignableFrom(cFieldClass) && processObjects) {
+                            AppObject valueAsAppObject = (AppObject) cValue;
+
+                            if (cValue != null) {
+                                valueAsList.add(valueAsAppObject.asMap(processCollections, processObjects, depth - 1));
+                            }
+                        }
+                    }
+
+                    result.put(cFieldName, valueAsList);
+
+                } else if (Number.class.isAssignableFrom(cFieldClass)) {
+                    result.put(cFieldName, value);
+
+                } else if (String.class.isAssignableFrom(cFieldClass)) {
+
+                    if ((value != null) && !cFieldName.contains("secret")) {
+                        result.put(cFieldName, value);
+                    }else
+                    {
+                        result.put(cFieldName, null);
+                    }
+
+                } else if (Date.class.isAssignableFrom(cFieldClass)) {
+
+                    result.put(cFieldName, value);
+
+                } else if (AppObject.class.isAssignableFrom(cFieldClass) && processObjects && (depth > 0)) {
+                    AppObject valueAsAppObject = (AppObject) value;
+
+                    if (value != null) {
+                        result.put(cFieldName, valueAsAppObject.asMap(processCollections, processObjects, depth - 1));
+
+                    } else {
+                        result.put(cFieldName, null);
+                    }
+
+                } else {
                     //TODO
                 }
-                
+
             } catch (IllegalArgumentException ex) {
                 Logger.getLogger(AppObject.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(AppObject.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
         }
 
         return result;

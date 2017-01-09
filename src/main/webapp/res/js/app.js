@@ -447,10 +447,10 @@ this.APP["activityGraph"] = this.APP["activityGraph"] || {
         displayDemoGraph001Step0: function displayDemoGraph001Step0()
         {
 
-            var ids = [];
+            var ids = [20,60,72,38,78,68];
 
             var jqxhr = $.ajax({
-                url: "s/graphs/getAllRelatedActivityIds",
+                url: "s/graphs/getGraphDataFromActivityIds",
                 method: "POST",
                 cache: false,
                 data: JSON.stringify(ids),
@@ -462,45 +462,93 @@ this.APP["activityGraph"] = this.APP["activityGraph"] || {
         },
         displayDemoGraph001Step1: function displayDemoGraph001Step1(data)
         {
-            APP.activityGraph.data.activityIds = data ;
-            
-            window.alert("Hit displayDemoGraph001Step1 !!");
-            
-            var jqxhr = $.ajax({
-                url: "s/graphs/getActivitiesFromIds",
-                method: "POST",
-                cache: false,
-                data: JSON.stringify(data),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                crossDomain: false,
-                success: APP.activityGraph.gui.displayDemoGraph001Step2
-            });            
-            
+            APP.activityGraph.data.testGraphData = data;
+
+            //window.alert("Hit displayDemoGraph001Step1 !!");
+
+            $("#mainSubContainer").load("res/templates/graphView_v0.html", {}, APP.activityGraph.gui.displayDemoGraph001Step2);
+
+
         },
         displayDemoGraph001Step2: function displayDemoGraph001Step2(data)
         {
-            
-            APP.activityGraph.data.activities = data ;
-            
-            window.alert("Hit displayDemoGraph001Step2 !!");
 
-            var jqxhr = $.ajax({
-                url: "s/graphs/getRelationsFromActivityIds",
-                method: "POST",
-                cache: false,
-                data: JSON.stringify(APP.activityGraph.data.activityIds),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                crossDomain: false,
-                success: APP.activityGraph.gui.displayDemoGraph001Step3
-            });            
-        
+            //APP.activityGraph.data.activities = data ;
+
+            //window.alert("Hit displayDemoGraph001Step2 !!");
+
+            var mainSvg = d3.select("#graphView_v0_svg");
+            var mainSvgWidth = mainSvg.attr("width");
+            var mainSvgHeight = mainSvg.attr("height");
+
+            var d3Simulation = d3.forceSimulation()
+                    .force("link", d3.forceLink().id(function (d) {
+                        return d.id;
+                    }))
+                    .force("charge", d3.forceManyBody())
+                    .force("center", d3.forceCenter(mainSvgWidth / 2, mainSvgHeight / 2));
+
+            var link = mainSvg.append("g")
+                    .attr("class", "links")
+                    .selectAll("line")
+                    .data(APP.activityGraph.data.testGraphData.relations)
+                    .enter()
+                    .append("line")
+                    .attr("stroke", "black")
+                    .attr("stroke-width", "2");
+
+            var node = mainSvg.append("g")
+                    .attr("class", "nodes")
+                    .selectAll("circle")
+                    .data(APP.activityGraph.data.testGraphData.activities)
+                    .enter()
+                    .append("circle")
+                    .attr("stroke-width", "2")
+                    .attr("fill", "silver")
+                    .attr("r", "4");
+
+            node.append("text").text(function (d) {
+                return d.displayName;
+            }).attr("color", "black");
+
+            d3Simulation.nodes(APP.activityGraph.data.testGraphData.activities)
+                    .on("tick", function () {
+                        link
+                                .attr("x1", function (d) {
+                                    return d.source.x;
+                                })
+                                .attr("y1", function (d) {
+                                    return d.source.y;
+                                })
+                                .attr("x2", function (d) {
+                                    return d.target.x;
+                                })
+                                .attr("y2", function (d) {
+                                    return d.target.y;
+                                });
+
+                        node
+                                .attr("cx", function (d) {
+                                    return d.x;
+                                })
+                                .attr("cy", function (d) {
+                                    return d.y;
+                                });
+                    });
+
+                d3Simulation.force("link").links(APP.activityGraph.data.testGraphData.relations);
+                d3Simulation.force("link").distance(function(){return 400;});
+                //d3Simulation.force("link").strength(function(){return 5;});
+                d3Simulation.force("charge").distanceMin(function(){return 0;});
+                d3Simulation.force("charge").distanceMax(function(){return 500});
+                d3Simulation.force("charge").strength(function(){return -30;});
+
+                
         },
         displayDemoGraph001Step3: function displayDemoGraph001Step3(data)
         {
-            APP.activityGraph.data.activityRelations = data ;
-            
+            APP.activityGraph.data.activityRelations = data;
+
             window.alert("Hit displayDemoGraph001Step3 !!");
         },
         displayDemoGraph001Step4: function displayDemoGraph001Step4(data)
@@ -511,10 +559,15 @@ this.APP["activityGraph"] = this.APP["activityGraph"] || {
     },
     toolKit: {},
     data: {
-        activityIds : [] ,
-        activities : [] ,
-        activityRelationIds : [] ,
-        activityRelations : []
+        activityIds: [],
+        activities: [],
+        activityRelationIds: [],
+        activityRelations: [],
+        testGraphData: {
+            activityIds: [],
+            relationIds: [],
+            activities: [],
+            relations: []}
     }
 };
 APP.activityGraph.bootstrap();
