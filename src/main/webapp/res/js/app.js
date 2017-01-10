@@ -469,47 +469,76 @@ this.APP["activityGraph"] = this.APP["activityGraph"] || {
 
             //$("#mainSubContainer").load("res/templates/graphView_v0.html", {}, APP.activityGraph.gui.displayDemoGraph001Step2);
 
-            $("#mainSubContainer").css("width", "1140px");
+            //$("#mainSubContainer").css("width", "1140px");
             $("#mainSubContainer").css("height", "1140px");
-            
+            $("#mainSubContainer").css("min-height", "700px");
+
             $("#jumbotron>h1").text("Let's go...");
             $("#jumbotron").fadeOut();
-            $("#jumbotron>h1").text("Bienvenue !!");            
+            $("#jumbotron>h1").text("Bienvenue !!");
 
 
             var opts = {
                 manipulation: true,
-                height: '90%',
+                autoResize: true,
+                height: '95%',
+                width: '95%',
                 layout: {
                     hierarchical: {
-                        enabled: false,
-                        levelSeparation: 150,
-                        nodeSpacing: 100,
-                        treeSpacing: 200,
+                        enabled: true,
+                        levelSeparation: 130,
+                        nodeSpacing: 90,
+                        treeSpacing: 120,
                         blockShifting: true,
                         edgeMinimization: true,
-                        parentCentralization: true,
+                        parentCentralization: false,
                         direction: 'LR', // UD, DU, LR, RL
-                        sortMethod: 'hubsize'   // hubsize, directed
+                        sortMethod: 'directed'   // hubsize, directed
                     }
                 },
                 physics: {
+                    barnesHut: {
+                        gravitationalConstant: -2000,
+                        centralGravity: 0.2,
+                        springLength: 65,
+                        springConstant: 0.04,
+                        damping: 0.09,
+                        avoidOverlap: 0.2
+                    },
                     repulsion: {
                         centralGravity: 0.2,
-                        springLength: 200,
+                        springLength: 90,
                         springConstant: 0.05,
-                        nodeDistance: 100,
+                        nodeDistance: 90,
                         damping: 0.09
                     },
                     hierarchicalRepulsion: {
-                        nodeDistance: 200
-                    }
+                        centralGravity: 0.1,
+                        springLength: 100,
+                        springConstant: 0.01,
+                        nodeDistance: 120,
+                        damping: 0.09
+                    },
+                    maxVelocity: 50,
+                    minVelocity: 0.1,
+                    solver: 'barnesHut',
+                    stabilization: {
+                        enabled: true,
+                        iterations: 1000,
+                        updateInterval: 100,
+                        onlyDynamicEdges: false,
+                        fit: true
+                    },
+                    timestep: 0.5,
+                    adaptiveTimestep: true
                 }
             };
 
             var mainSubContainer = document.getElementById('mainSubContainer');
-            var data = {'nodes': APP.activityGraph.data.testGraphData.activities, 'edges': APP.activityGraph.data.testGraphData.relations}
+            var data = {'nodes': APP.activityGraph.data.testGraphData.activities, 'edges': APP.activityGraph.data.testGraphData.relations};
             var gph = new vis.Network(mainSubContainer, data, opts);
+
+
 
 
         },

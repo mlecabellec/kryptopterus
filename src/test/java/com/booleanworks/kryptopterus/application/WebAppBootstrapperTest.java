@@ -48,6 +48,7 @@ public class WebAppBootstrapperTest {
     }
 
     @Test
+    @Ignore
     public void testBootStrap()
     {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance() ;
@@ -60,6 +61,20 @@ public class WebAppBootstrapperTest {
         
     }
 
+    @Test
+    public void testBootStrap2()
+    {
+        MainHibernateUtil mhu = MainHibernateUtil.getInstance() ;
+        
+        WebAppBootstrapper bootstrapper = new WebAppBootstrapper() ;
+        
+        bootstrapper.setupMandatoryData();
+        
+        //bootstrapper.setupTestData();
+        
+    }    
+    
+    
     @Test
     @Ignore
     public void testBootStrapAndClean()

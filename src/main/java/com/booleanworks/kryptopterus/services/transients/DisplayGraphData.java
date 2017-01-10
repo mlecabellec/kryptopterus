@@ -15,12 +15,9 @@
  */
 package com.booleanworks.kryptopterus.services.transients;
 
-import com.booleanworks.kryptopterus.entities.AppActivity;
-import com.booleanworks.kryptopterus.entities.AppActivityRelation;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 

@@ -28,7 +28,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 /**
  *
