@@ -20,7 +20,9 @@ import com.booleanworks.kryptopterus.entities.AppActivity;
 import com.booleanworks.kryptopterus.services.transients.SearchRequest;
 import com.booleanworks.kryptopterus.utilities.SearchExpressionParser;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -59,13 +61,14 @@ public class ActivityListService {
     @Path("searchurl/{searchString}")
     @Produces(MediaType.APPLICATION_JSON)
     //@Consumes(MediaType.APPLICATION_JSON)    
-    public Set<AppActivity> simpleActivitySearch(@PathParam("searchString") String searchString)
+    public List simpleActivitySearch(@PathParam("searchString") String searchString)
     {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Session session = mhu.getResidentSession() ;
+        Session session = mhu.getNewSession() ;
         CriteriaBuilder criteriaBuilder =  session.getCriteriaBuilder() ;
         //CriteriaQuery<AppActivity> criteriaQuery = criteriaBuilder.createQuery(AppActivity.class) ;
-        HashSet<AppActivity> result = new HashSet<>() ;
+        HashSet<AppActivity> resultActivities = new HashSet<>() ;
+        ArrayList result = new ArrayList<>() ;
         
         Principal userPrincipal = request.getUserPrincipal() ;
         
@@ -76,7 +79,14 @@ public class ActivityListService {
         Query q1 =  session.createQuery(cq1) ;
         q1.setMaxResults(1000);
         q1.setFirstResult(0);
-        result.addAll(q1.getResultList());
+        resultActivities.addAll(q1.getResultList());
+        
+        for(AppActivity activity : resultActivities)
+        {
+            result.add(activity.asMap(false, true, 0,"yyyy-MM-dd-HH-mm-ss"));
+        }
+        
+        mhu.closeSession(session);
         
         return result ;
     }
@@ -86,13 +96,14 @@ public class ActivityListService {
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
     //@Consumes(MediaType.APPLICATION_JSON)    
-    public Set<AppActivity> simpleActivitySearch(SearchRequest searchRequest)
+    public List simpleActivitySearch(SearchRequest searchRequest)
     {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance();
-        Session session = mhu.getResidentSession();
+        Session session = mhu.getNewSession();
         CriteriaBuilder criteriaBuilder =  session.getCriteriaBuilder() ;
         //CriteriaQuery<AppActivity> criteriaQuery = criteriaBuilder.createQuery(AppActivity.class) ;
-        HashSet<AppActivity> result = new HashSet<>() ;
+        HashSet<AppActivity> resultActivities = new HashSet<>() ;
+        ArrayList result = new ArrayList<>() ;
         
         Principal userPrincipal = request.getUserPrincipal() ;
         
@@ -107,7 +118,14 @@ public class ActivityListService {
         Query q1 =  session.createQuery(cq1) ;
         q1.setMaxResults(searchRequest.maxResults);
         q1.setFirstResult(searchRequest.offset);
-        result.addAll(q1.getResultList());
+        resultActivities.addAll(q1.getResultList());
+        
+        for(AppActivity activity : resultActivities)
+        {
+            result.add(activity.asMap(false, true, 0,"yyyy-MM-dd-HH-mm-ss"));
+        }
+        
+        mhu.closeSession(session);
         
         return result ;
     }    

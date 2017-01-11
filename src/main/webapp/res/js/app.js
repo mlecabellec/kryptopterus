@@ -354,22 +354,22 @@ this.APP["activityList"] = this.APP["activityList"] || {
                         {
                             data: 'plannedStart',
                             type: 'date',
-                            dateFormat: 'YYYY-MM-DD'
+                            dateFormat: 'YYYY-MM-DD-HH-mm-ss'
                         },
                         {
                             data: 'plannedEnd',
                             type: 'date',
-                            dateFormat: 'YYYY-MM-DD'
+                            dateFormat: 'YYYY-MM-DD-HH-mm-ss'
                         },
                         {
                             data: 'realStart',
                             type: 'date',
-                            dateFormat: 'YYYY-MM-DD'
+                            dateFormat: 'YYYY-MM-DD-HH-mm-ss'
                         },
                         {
                             data: 'realEnd',
                             type: 'date',
-                            dateFormat: 'YYYY-MM-DD'
+                            dateFormat: 'YYYY-MM-DD-HH-mm-ss'
                         },
                         {
                             data: 'version',
@@ -380,13 +380,13 @@ this.APP["activityList"] = this.APP["activityList"] || {
                         {
                             data: 'creationDate',
                             type: 'date',
-                            dateFormat: 'YYYY-MM-DD',
+                            dateFormat: 'YYYY-MM-DD-HH-mm-ss',
                             readOnly: true
                         },
                         {
                             data: 'modificationDate',
                             type: 'date',
-                            dateFormat: 'YYYY-MM-DD',
+                            dateFormat: 'YYYY-MM-DD-HH-mm-ss',
                             readOnly: true
                         }
 
