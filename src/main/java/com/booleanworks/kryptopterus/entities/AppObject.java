@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -310,6 +311,10 @@ public class AppObject implements Serializable {
     }
 
     public Map<String, Object> asMap(boolean processCollections, boolean processObjects, int depth) {
+        return this.asMap(true, true, depth, null);
+    }
+
+    public Map<String, Object> asMap(boolean processCollections, boolean processObjects, int depth, String simpleDateFormatString) {
         HashMap<String, Object> result = new HashMap<>();
 
         ArrayList<Field> knownFields = new ArrayList<Field>();
@@ -341,16 +346,27 @@ public class AppObject implements Serializable {
 
                         } else if (String.class.isAssignableFrom(cFieldClass)) {
 
-                            if ((cValue != null) &&  !cFieldName.contains("secret")) {
+                            if ((cValue != null) && !cFieldName.contains("secret")) {
                                 result.put(cFieldName, value);
-                            }else
-                            {
+                            } else {
                                 result.put(cFieldName, null);
                             }
 
                         } else if (Date.class.isAssignableFrom(cFieldClass)) {
 
-                            result.put(cFieldName, value);
+                            //TODO force string rendering
+                            if (simpleDateFormatString == null || simpleDateFormatString.length() == 0) {
+                                //return long ms since 1970
+                                result.put(cFieldName, value);
+                            } else {
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(simpleDateFormatString);
+
+                                if (value != null) {
+                                    result.put(cFieldName, simpleDateFormat.format((Date) value));
+                                } else {
+                                    result.put(cFieldName, null);
+                                }
+                            }
 
                         } else if (AppObject.class.isAssignableFrom(cFieldClass) && processObjects) {
                             AppObject valueAsAppObject = (AppObject) cValue;
@@ -370,14 +386,26 @@ public class AppObject implements Serializable {
 
                     if ((value != null) && !cFieldName.contains("secret")) {
                         result.put(cFieldName, value);
-                    }else
-                    {
+                    } else {
                         result.put(cFieldName, null);
                     }
 
                 } else if (Date.class.isAssignableFrom(cFieldClass)) {
 
-                    result.put(cFieldName, value);
+                    //TODO force string rendering
+                    if (simpleDateFormatString == null || simpleDateFormatString.length() == 0) {
+                        //return long ms since 1970
+                        result.put(cFieldName, value);
+                    } else {
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(simpleDateFormatString);
+
+                        if (value != null) {
+                            result.put(cFieldName, simpleDateFormat.format((Date) value));
+                        } else {
+                            result.put(cFieldName, null);
+                        }
+
+                    }
 
                 } else if (AppObject.class.isAssignableFrom(cFieldClass) && processObjects && (depth > 0)) {
                     AppObject valueAsAppObject = (AppObject) value;
