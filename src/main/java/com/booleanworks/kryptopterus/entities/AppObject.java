@@ -51,6 +51,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.OptimisticLockType;
 import org.hibernate.annotations.OptimisticLocking;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -78,6 +79,9 @@ public class AppObject implements Serializable {
     @XmlElement
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected Long id;
+
+    @NaturalId(mutable = true)
+    protected String naturalId;
 
     @XmlElement
     @Version
@@ -431,6 +435,14 @@ public class AppObject implements Serializable {
 
         return result;
 
+    }
+
+    public String getNaturalId() {
+        return naturalId;
+    }
+
+    public void setNaturalId(String naturalId) {
+        this.naturalId = naturalId;
     }
 
 }

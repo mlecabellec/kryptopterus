@@ -48,7 +48,7 @@ public class WebAppBootstrapperTest {
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void testBootStrap()
     {
         MainHibernateUtil mhu = MainHibernateUtil.getInstance() ;
